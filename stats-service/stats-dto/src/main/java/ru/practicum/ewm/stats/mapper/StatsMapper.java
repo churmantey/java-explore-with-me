@@ -8,6 +8,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface StatsMapper {
-    StatsDto statsToDto (Stats stats);
-    List<StatsDto> statsListToDto (List<Stats> statsList);
+    StatsDto statsToDto(Stats stats);
+
+    List<StatsDto> statsListToDto(List<Stats> statsList);
 }

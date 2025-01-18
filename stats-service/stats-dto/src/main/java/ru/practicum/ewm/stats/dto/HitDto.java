@@ -26,7 +26,7 @@ public class HitDto {
     private String ip;
 
     @PastOrPresent
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
 
 }

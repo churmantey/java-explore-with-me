@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface StatsClient {
 
-    HitDto addHit (String app, String uri, String ip, LocalDateTime timestamp);
+    HitDto addHit(String app, String uri, String ip, LocalDateTime timestamp);
 
     List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
 
