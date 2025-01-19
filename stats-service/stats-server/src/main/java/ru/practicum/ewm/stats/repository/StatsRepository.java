@@ -11,11 +11,6 @@ import java.util.List;
 
 public interface StatsRepository extends JpaRepository<Hit, Long> {
 
-    // @Query("select it from Item as it where it.available " +
-    //         "and lower(it.name) like lower(concat('%', :text,'%')) " +
-    //         "or lower(it.description) like lower(concat('%', :text,'%')) order by it.id")
-    // List<Item> findAvailableByNameOrDescription(@Param("text") String text);
-
     @Query("select new ru.practicum.ewm.stats.model.Stats(h.app, h.uri, COUNT(h.ip))" +
             " FROM Hit AS h where h.timestamp between :start and :end" +
             " GROUP BY h.app, h.uri ORDER BY COUNT(h.ip) DESC"

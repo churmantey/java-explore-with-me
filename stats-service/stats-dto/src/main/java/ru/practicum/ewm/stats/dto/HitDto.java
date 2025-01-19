@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class HitDto {
 
+    public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
     @NotBlank
     private String app;
 
@@ -26,7 +28,7 @@ public class HitDto {
     private String ip;
 
     @PastOrPresent
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DATE_FORMAT_PATTERN)
     private LocalDateTime timestamp;
 
 }

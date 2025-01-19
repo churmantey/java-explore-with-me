@@ -25,18 +25,9 @@ public class StatsController {
         return statsService.addHit(hitDto);
     }
 
-//    @GetMapping("/stats")
-//    public List<StatsDto> getStats(@RequestParam(required = true) @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-//                                    @RequestParam(required = true) @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") LocalDateTime end,
-//                                    @RequestParam(defaultValue = "") List<String> uris,
-//                                    @RequestParam(defaultValue = "false") boolean unique) {
-//        log.info("GET stat start={}, end={}, uris={}, unique={} ", start, end, uris, unique);
-//        return statsService.getStats(start, end, uris, unique);
-//    }
-
     @GetMapping("/stats")
-    public List<StatsDto> getStats(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-                                   @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+    public List<StatsDto> getStats(@RequestParam @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN) LocalDateTime start,
+                                   @RequestParam @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN) LocalDateTime end,
                                    @RequestParam(defaultValue = "") List<String> uris,
                                    @RequestParam(defaultValue = "false") boolean unique) {
         log.info("GET stat start={}, end={}, uris={}, unique={} ", start, end, uris, unique);

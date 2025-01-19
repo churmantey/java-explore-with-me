@@ -20,7 +20,7 @@ public class StatsClientImpl implements StatsClient {
     private final RestTemplate restTemplate;
     private static final String HIT_ENDPOINT = "/hit";
     private static final String STATS_ENDPOINT = "/stats";
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(HitDto.DATE_FORMAT_PATTERN);
     private final String baseUrl;
 
 
