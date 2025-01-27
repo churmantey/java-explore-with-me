@@ -1,7 +1,6 @@
-package ru.practicum.ewm.main.user;
+package ru.practicum.ewm.main.category;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +13,8 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "categories")
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +24,6 @@ public class User {
     @NotBlank
     @Column(name = "name")
     private String name;
-
-    @Email
-    @NotBlank
-    @Column(name = "email")
-    private String email;
 
     @Override
     public final boolean equals(Object o) {
@@ -45,8 +39,8 @@ public class User {
                 : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
 
-        User user = (User) o;
-        return getId() != null && Objects.equals(getId(), user.getId());
+        Category category = (Category) o;
+        return getId() != null && Objects.equals(getId(), category.getId());
     }
 
     @Override

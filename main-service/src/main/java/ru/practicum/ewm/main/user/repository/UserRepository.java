@@ -12,14 +12,22 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    //@Query("select u from User u where u.id in :ids order by u.id offset :from")
     @Query(value = """
-            select u.id, u.name, u.email 
-            from users as u 
+            select *
+            from users as u
             where u.id in :ids order by u.id offset :from limit :size
             """, nativeQuery = true)
     List<User> findAllByIds(@Param("ids") Collection<Long> ids,
                                       @Param("from") int from,
                                       @Param("size") int size);
 
+    @Query(value = """
+            select *
+            from users as u
+            order by u.id offset :from limit :size
+            """, nativeQuery = true)
+    List<User> findUsers(@Param("from") int from,
+                         @Param("size") int size);
+
+    boolean existsByEmailIgnoreCase(String email);
 }

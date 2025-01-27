@@ -19,4 +19,12 @@ public class ErrorHandler {
         return new ErrorResponse(HttpStatus.NOT_FOUND.name(), "Not found", e.getMessage(), LocalDateTime.now());
     }
 
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleNotFoundException(ValidationException e) {
+        log.error("Got 409 status conflicting data {}", e.getMessage(), e);
+        return new ErrorResponse(HttpStatus.CONFLICT.name(), "Conflicting data",
+                e.getMessage(), LocalDateTime.now());
+    }
+
 }

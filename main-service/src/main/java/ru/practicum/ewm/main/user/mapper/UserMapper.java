@@ -18,7 +18,4 @@ public interface UserMapper {
     UserShortDto toShortDto(User user);
 
     List<UserShortDto> toShortDtoList(List<User> userList);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    User partialUpdate(UserDto userDto, @MappingTarget User user);
 }
