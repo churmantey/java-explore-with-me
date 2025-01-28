@@ -32,7 +32,6 @@ public class Hit {
     private String uri;
 
     @NotBlank
-    @Pattern(regexp = "(\\d{1,3}\\.){3}\\d{1,3}", message = "Incorrect ip address")
     @Column(name = "ip")
     private String ip;
 

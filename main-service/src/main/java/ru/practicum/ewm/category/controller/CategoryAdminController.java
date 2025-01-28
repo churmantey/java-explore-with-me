@@ -1,6 +1,7 @@
 package ru.practicum.ewm.category.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class CategoryAdminController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto createCategory(CategoryDto categoryDto, HttpServletRequest request) {
+    public CategoryDto createCategory(@RequestBody @Valid CategoryDto categoryDto, HttpServletRequest request) {
         log.info("POST new category {}", categoryDto);
         statsLogger.logIPAndPath(request);
         return categoryService.createCategory(categoryDto);
@@ -28,7 +29,8 @@ public class CategoryAdminController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CategoryDto updateCategory(@PathVariable Long id, CategoryDto categoryDto, HttpServletRequest request) {
+    public CategoryDto updateCategory(@RequestBody @Valid CategoryDto categoryDto,
+                                      @PathVariable Long id, HttpServletRequest request) {
         log.info("PATCH category id={}, {}", id, categoryDto);
         statsLogger.logIPAndPath(request);
         return categoryService.updateCategory(id, categoryDto);
