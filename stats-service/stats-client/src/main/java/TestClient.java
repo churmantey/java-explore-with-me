@@ -1,5 +1,5 @@
-import ru.practicum.emw.stats.StatsClient;
-import ru.practicum.emw.stats.StatsClientImpl;
+import ru.practicum.ewm.stats.StatsClient;
+import ru.practicum.ewm.stats.StatsClientImpl;
 import ru.practicum.ewm.stats.dto.HitDto;
 
 import java.time.LocalDateTime;
