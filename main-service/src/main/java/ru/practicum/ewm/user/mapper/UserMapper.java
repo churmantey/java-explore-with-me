@@ -18,4 +18,6 @@ public interface UserMapper {
     UserShortDto toShortDto(User user);
 
     List<UserShortDto> toShortDtoList(List<User> userList);
+
+    User toEntity(UserShortDto userShortDto);
 }
