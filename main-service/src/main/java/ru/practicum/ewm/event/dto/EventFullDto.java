@@ -16,30 +16,48 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 public class EventFullDto {
+
     private final Long id;
+
     @NotNull
     private final CategoryDto category;
+
     @NotNull
     private final UserShortDto initiator;
+
     @NotNull
     @Size(max = 120)
     private final String title;
+
     @NotNull
     @Size(max = 2000)
     private final String annotation;
+
     @NotNull
     @Size(max = 7000)
     private final String description;
+
     @NotNull
     private final LocalDateTime eventDate;
+
     private final Double locationLat;
+
     private final Double locationLon;
+
     private final Boolean paid;
+
     private final Integer participantLimit;
+
     @NotNull
     private final LocalDateTime createdOn;
+
     @NotNull
     private final LocalDateTime publishedOn;
+
     private final Boolean requestModeration;
+
     private final EventStates state;
+
+    private final Long views;
+
 }

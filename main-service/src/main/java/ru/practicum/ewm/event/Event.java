@@ -81,6 +81,9 @@ public class Event {
     @Column(name = "state")
     private EventStates state;
 
+    @Transient
+    private Long views;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
