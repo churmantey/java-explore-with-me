@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event.service;
 
 import ru.practicum.ewm.event.EventSortTypes;
+import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 
 import java.time.LocalDateTime;
@@ -11,5 +12,7 @@ public interface EventService {
     List<EventShortDto> getEventsByFilters(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
                                            LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortTypes sortType,
                                            int from, int size);
+
+    EventFullDto getEventById(Long eventId);
 
 }
