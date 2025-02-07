@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.user.dto.UserShortDto;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  */
 @AllArgsConstructor
 @Getter
+@Setter
 public class EventFullDto {
 
     private final Long id;
@@ -40,9 +42,7 @@ public class EventFullDto {
     @NotNull
     private final LocalDateTime eventDate;
 
-    private final Double locationLat;
-
-    private final Double locationLon;
+    private final LocationDto location;
 
     private final Boolean paid;
 

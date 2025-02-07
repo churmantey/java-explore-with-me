@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.event.dto.EventFullDto;
@@ -14,13 +15,12 @@ public class EventPublicController {
 
     @GetMapping
     public List<EventShortDto> getEventsByFilters() {
-
+        return null;
     }
 
-    @GetMapping
-    public EventFullDto getEventsByFilters() {
-
+    @GetMapping("/{eventId}")
+    public EventFullDto getEventsById(@PathVariable("eventId") Long eventId) {
+        return null;
     }
-
 
 }

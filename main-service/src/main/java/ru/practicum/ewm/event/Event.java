@@ -1,12 +1,14 @@
 package ru.practicum.ewm.event;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.validator.constraints.Range;
 import ru.practicum.ewm.category.Category;
 import ru.practicum.ewm.user.User;
 
