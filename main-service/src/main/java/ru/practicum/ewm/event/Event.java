@@ -1,14 +1,12 @@
 package ru.practicum.ewm.event;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.validator.constraints.Range;
 import ru.practicum.ewm.category.Category;
 import ru.practicum.ewm.user.User;
 
@@ -72,19 +70,18 @@ public class Event {
     @Column(name = "created_on")
     private LocalDateTime createdOn;
 
-    @NotNull
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
 
     @Column(name = "request_moderation")
-    private Boolean requestModeration;
+    private Boolean requestModeration = true;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
     private EventStates state;
 
     @Transient
-    private Long views;
+    private long views;
 
     @Override
     public final boolean equals(Object o) {
@@ -112,6 +109,5 @@ public class Event {
                 .hashCode()
                 : getClass().hashCode();
     }
-
 
 }

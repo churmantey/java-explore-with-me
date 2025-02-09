@@ -64,7 +64,6 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -92,7 +91,6 @@
             <classifier>jakarta</classifier>
             <version>${com.querydsl.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>

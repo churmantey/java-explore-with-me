@@ -1,13 +1,11 @@
 package ru.practicum.ewm.event.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class LocationDto {
-    private Double lat;
-    private Double lon;
+    private double lat;
+    private double lon;
 }

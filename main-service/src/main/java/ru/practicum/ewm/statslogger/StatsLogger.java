@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.stats.StatsClient;
-import ru.practicum.ewm.stats.StatsClientImpl;
 
 import java.time.LocalDateTime;
 

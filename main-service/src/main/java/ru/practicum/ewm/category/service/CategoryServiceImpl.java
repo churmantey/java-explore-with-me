@@ -2,6 +2,7 @@ package ru.practicum.ewm.category.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.category.Category;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.mapper.CategoryMapper;
@@ -20,6 +21,7 @@ public class CategoryServiceImpl implements CategoryService{
     private final CategoryMapper mapper;
 
     @Override
+    @Transactional
     public CategoryDto createCategory(CategoryDto categoryDto) {
         if (!storage.existsByNameIgnoreCase(categoryDto.getName())) {
             return mapper.toCategoryDto(storage.save(mapper.toEntity(categoryDto)));
@@ -29,6 +31,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    @Transactional
     public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
         if (!storage.existsByNameIgnoreCaseAndIdNot(categoryDto.getName(), categoryId)) {
             Optional<Category> optCategory = storage.findById(categoryId);
@@ -45,6 +48,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long categoryId) {
         if (storage.existsById(categoryId)) {
             storage.deleteById(categoryId);

@@ -1,12 +1,12 @@
 package ru.practicum.ewm.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.event.EventStates;
+import ru.practicum.ewm.stats.dto.HitDto;
 import ru.practicum.ewm.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
@@ -14,50 +14,53 @@ import java.time.LocalDateTime;
 /**
  * DTO for {@link ru.practicum.ewm.event.Event}
  */
+@Data
 @AllArgsConstructor
-@Getter
-@Setter
+@NoArgsConstructor
 public class EventFullDto {
 
-    private final Long id;
+    private Long id;
 
     @NotNull
-    private final CategoryDto category;
+    private CategoryDto category;
 
     @NotNull
-    private final UserShortDto initiator;
+    private UserShortDto initiator;
 
     @NotNull
     @Size(max = 120)
-    private final String title;
+    private String title;
 
     @NotNull
     @Size(max = 2000)
-    private final String annotation;
+    private String annotation;
 
     @NotNull
     @Size(max = 7000)
-    private final String description;
+    private String description;
 
     @NotNull
-    private final LocalDateTime eventDate;
+    @JsonFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
+    private LocalDateTime eventDate;
 
-    private final LocationDto location;
+    private LocationDto location = new LocationDto();
 
-    private final Boolean paid;
+    private Boolean paid;
 
-    private final Integer participantLimit;
-
-    @NotNull
-    private final LocalDateTime createdOn;
+    private Integer participantLimit;
 
     @NotNull
-    private final LocalDateTime publishedOn;
+    @JsonFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
+    private LocalDateTime createdOn;
 
-    private final Boolean requestModeration;
+    @NotNull
+    @JsonFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
+    private LocalDateTime publishedOn;
 
-    private final EventStates state;
+    private Boolean requestModeration;
 
-    private final Long views;
+    private EventStates state;
+
+    private Long views;
 
 }

@@ -18,4 +18,6 @@ public interface EventService {
 
     EventFullDto createEvent(Long userId, NewEventDto newEventDto);
 
+    List<EventShortDto> getUserEvents(Long userId, int from, int size);
+
 }

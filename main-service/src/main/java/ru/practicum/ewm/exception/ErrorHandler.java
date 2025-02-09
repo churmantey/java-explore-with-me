@@ -27,4 +27,12 @@ public class ErrorHandler {
                 e.getMessage(), LocalDateTime.now());
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRuntimeException(RuntimeException e) {
+        log.error("Got 500 status, server error {}", e.getMessage(), e);
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.name(), "Server error",
+                e.getMessage(), LocalDateTime.now());
+    }
+
 }

@@ -1,34 +1,47 @@
 package ru.practicum.ewm.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Value;
-import ru.practicum.ewm.category.dto.CategoryDto;
+import lombok.*;
 import ru.practicum.ewm.event.Event;
+import ru.practicum.ewm.stats.dto.HitDto;
+
+import java.time.LocalDateTime;
 
 /**
  * DTO for {@link Event}
  */
 
+@Data
 @AllArgsConstructor
-@Getter
-@Setter
+@NoArgsConstructor
 public class NewEventDto {
+
     @NotNull
-    CategoryDto category;
+    private Long category;
+
     @NotNull
     @Size(max = 120)
-    String title;
+    private String title;
+
     @NotNull
     @Size(max = 2000)
-    String annotation;
+    private String annotation;
+
     @NotNull
     @Size(max = 7000)
-    String description;
-    Boolean paid;
-    Integer participantLimit;
-    Boolean requestModeration;
+    private String description;
+
+    private LocationDto location;
+
+    private boolean paid;
+
+    private int participantLimit;
+
+    private boolean requestModeration = true;
+
+    @NotNull
+    @JsonFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
+    private LocalDateTime eventDate;
 }
