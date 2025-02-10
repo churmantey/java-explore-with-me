@@ -34,14 +34,12 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
                     """);
             queryParameters.put("text", text);
         }
-
         if (categoryIds != null && !categoryIds.isEmpty()) {
             query.append("""
                      and (e.category_id in :categoryIds)
                     """);
             queryParameters.put("categoryIds", categoryIds);
         }
-
         if (rangeStart != null) {
             query.append(" and (e.event_date >= :rangeStart) ");
             queryParameters.put("rangeStart", rangeStart);
@@ -54,7 +52,13 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
             query.append(" and (e.event_date <= :rangeEnd) ");
             queryParameters.put("rangeEnd", rangeEnd);
         }
-        query.append(" order by e.event_date ");
+        switch (sortType) {
+            case VIEWS:
+                query.append(" order by e.views DESC ");
+                break;
+            default:
+                query.append(" order by e.event_date ASC ");
+        }
 
         Query nativeQuery =  entityManager.createNativeQuery(query.toString(), Event.class);
         for (Map.Entry<String, Object> entry : queryParameters.entrySet()) {

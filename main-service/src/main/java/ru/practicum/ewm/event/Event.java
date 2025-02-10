@@ -80,7 +80,10 @@ public class Event {
     @Column(name = "state")
     private EventStates state;
 
-    @Transient
+    @Column(name = "confirmed_requests")
+    private long confirmedRequests;
+
+    @Column(name = "views")
     private long views;
 
     @Override

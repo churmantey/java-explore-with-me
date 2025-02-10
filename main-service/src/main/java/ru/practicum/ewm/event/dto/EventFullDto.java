@@ -63,4 +63,5 @@ public class EventFullDto {
 
     private Long views;
 
+    private long confirmedRequests;
 }

@@ -14,8 +14,6 @@ import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.repository.UserRepository;
-import ru.practicum.ewm.user.service.UserService;
-import ru.practicum.ewm.user.service.UserServiceImpl;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +29,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto createEvent(Long userId, NewEventDto newEventDto) {
+        validateNewEvent(newEventDto);
         Optional<User> optUser = userRepository.findById(userId);
         if (optUser.isPresent()) {
             Event newEvent = mapper.toEntity(newEventDto);
@@ -39,7 +38,7 @@ public class EventServiceImpl implements EventService {
             newEvent.setState(EventStates.PENDING);
             return mapper.toEventFullDto(eventRepository.save(newEvent));
         } else {
-            throw new ValidationException("User with id=" + userId + " not found");
+            throw makeUserNotFoundException(userId);
         }
     }
 
@@ -53,7 +52,13 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto getEventById(Long eventId) {
-        return null;
+        Optional<Event> optEvent = eventRepository.findById(eventId);
+        if (optEvent.isPresent()) {
+            return mapper.toEventFullDto(optEvent.get());
+        }
+        else {
+           throw makeEventNotFoundException(eventId);
+        }
     }
 
     @Override
@@ -61,7 +66,42 @@ public class EventServiceImpl implements EventService {
         if (userRepository.existsById(userId)) {
             return mapper.toEventShortDtoList(eventRepository.findByInitiator_IdOrderByIdAsc(userId, from, size));
         } else {
-            throw new NotFoundException("User with id=" + userId + "not found");
+            throw makeUserNotFoundException(userId);
         }
     }
+
+    @Override
+    public EventFullDto getUserEventById(Long userId, Long eventId) {
+        if (userRepository.existsById(userId)) {
+            Optional<Event> optEvent = eventRepository.findById(eventId);
+            if (optEvent.isPresent()) {
+                if (!optEvent.get().getInitiator().getId().equals(userId)) {
+                    throw new ValidationException("User (id=" + userId + ") has no event with id=" + eventId);
+                }
+                return mapper.toEventFullDto(optEvent.get());
+            } else {
+                throw makeEventNotFoundException(eventId);
+            }
+        } else {
+            throw makeUserNotFoundException(userId);
+        }
+    }
+
+    private void validateNewEvent(NewEventDto newEventDto) {
+        if (newEventDto == null) {
+            throw new ValidationException("New event of NULL received");
+        } else if (newEventDto.getEventDate() == null
+                    || newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new ValidationException("New event should start in not less than 2 hours");
+        }
+    }
+
+    private NotFoundException makeEventNotFoundException(Long eventId) {
+        return new NotFoundException("Event with id=" + eventId + " not found");
+    }
+
+    private NotFoundException makeUserNotFoundException(Long userId) {
+        return new NotFoundException("User with id=" + userId + "not found");
+    }
+
 }

@@ -23,6 +23,17 @@ public class EventPrivateController {
     private final EventService eventService;
     private final StatsLogger statsLogger;
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<EventShortDto> getUserEvents(@PathVariable("userId") Long userId,
+                                             @RequestParam(name = "from", defaultValue = "0") int from,
+                                             @RequestParam(name = "size", defaultValue = "10") int size,
+                                             HttpServletRequest request) {
+        log.info("GET user events , userId={}, from={}, size={}", userId, from, size);
+        statsLogger.logIPAndPath(request);
+        return eventService.getUserEvents(userId, from, size);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@PathVariable("userId") Long userId, @Valid @RequestBody NewEventDto newEventDto,
@@ -32,11 +43,13 @@ public class EventPrivateController {
         return eventService.createEvent(userId, newEventDto);
     }
 
-    @GetMapping
+    @GetMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<EventShortDto> getUserEvents(@PathVariable("userId") Long userId,
-                                             @RequestParam(name = "from", defaultValue = "0") int from,
-                                             @RequestParam(name = "size", defaultValue = "10") int size) {
-        return eventService.getUserEvents(userId, from, size);
+    public EventFullDto getUserEventById(@PathVariable("userId") Long userId, @PathVariable("eventId") Long eventId,
+                                         HttpServletRequest request) {
+        log.info("GET user event , userId={}, eventId={}", userId, eventId);
+        statsLogger.logIPAndPath(request);
+        return eventService.getUserEventById(userId, eventId);
     }
+
 }

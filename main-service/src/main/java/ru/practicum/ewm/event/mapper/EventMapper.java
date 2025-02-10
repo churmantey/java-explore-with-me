@@ -6,8 +6,8 @@ import ru.practicum.ewm.category.mapper.CategoryMapper;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
-import ru.practicum.ewm.event.dto.LocationDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
+import ru.practicum.ewm.event.dto.UpdateEventDto;
 import ru.practicum.ewm.user.mapper.UserMapper;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public interface EventMapper {
 
     Event toEntity(EventShortDto eventShortDto);
 
-    @Mapping(target = "category", source = "category", qualifiedByName = "mapCategory")
+    @Mapping(source = "category", target = "category.id")
     Event toEntity(NewEventDto newEventDto);
 
     EventFullDto toEventFullDto(Event event);
@@ -36,7 +36,7 @@ public interface EventMapper {
     }
 
     @AfterMapping
-    default void setEventLocations(@MappingTarget Event event,  EventFullDto fullDto) {
+    default void setEventLocations(@MappingTarget Event event, EventFullDto fullDto) {
         if (fullDto.getLocation() != null) {
             event.setLocationLat(fullDto.getLocation().getLat());
             event.setLocationLon(fullDto.getLocation().getLon());
@@ -44,30 +44,17 @@ public interface EventMapper {
     }
 
     @AfterMapping
-    default void setEventLocations(@MappingTarget Event event,  NewEventDto newDto) {
+    default void setEventLocations(@MappingTarget Event event, NewEventDto newDto) {
         if (newDto.getLocation() != null) {
             event.setLocationLat(newDto.getLocation().getLat());
             event.setLocationLon(newDto.getLocation().getLon());
         }
     }
 
-    @Named("mapCategory")
-    default Category mapCategory(Long value){
-        Category category = new Category();
-        category.setId(value);
-        return category;
-    }
+    @Mapping(source = "categoryId", target = "category.id")
+    Event toEntity(UpdateEventDto updateEventDto);
 
-//
-//    @Named("getLocation")
-//    default LocationDto getLocation(Event event) {
-//        return new LocationDto(event.getLocationLat(), event.getLocationLon());
-//    }
-//
-//    @Named("getLocation")
-//    default Double getLocationLatLon(Event event) {
-//        return new LocationDto(event.getLocationLat(), event.getLocationLon());
-//    }
-
+    @Mapping(source = "category.id", target = "categoryId")
+    UpdateEventDto toUpdateEventDto(Event event);
 
 }

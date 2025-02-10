@@ -19,9 +19,13 @@ public class StatsLogger {
     public void logIPAndPath(HttpServletRequest request) {
         log.info("client ip: {}", request.getRemoteAddr());
         log.info("endpoint path: {}", request.getRequestURI());
-        statsClient.addHit(SERVICE_NAME,
-                request.getRequestURI(),
-                request.getRemoteAddr(),
-                LocalDateTime.now());
+        try {
+            statsClient.addHit(SERVICE_NAME,
+                    request.getRequestURI(),
+                    request.getRemoteAddr(),
+                    LocalDateTime.now());
+        } catch (RuntimeException e) {
+            log.info("Stats update failed: {}", e.getMessage());
+        }
     }
 }
