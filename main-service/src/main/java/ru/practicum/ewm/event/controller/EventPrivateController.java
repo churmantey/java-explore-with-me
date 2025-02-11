@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
+import ru.practicum.ewm.event.dto.UpdateEventDto;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.statslogger.StatsLogger;
 
@@ -50,6 +51,15 @@ public class EventPrivateController {
         log.info("GET user event , userId={}, eventId={}", userId, eventId);
         statsLogger.logIPAndPath(request);
         return eventService.getUserEventById(userId, eventId);
+    }
+
+    @PatchMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto updateUserEvent(@PathVariable("userId") Long userId, @PathVariable("eventId") Long eventId,
+                                         @RequestBody UpdateEventDto updateEventDto,
+                                         HttpServletRequest request) {
+
+        return eventService.updateUserEvent(userId, eventId, updateEventDto);
     }
 
 }

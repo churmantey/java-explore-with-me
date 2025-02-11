@@ -2,12 +2,14 @@ package ru.practicum.ewm.event.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
+import ru.practicum.ewm.event.dto.UpdateEventDto;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
@@ -25,6 +27,7 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final EventMapper mapper;
 
     @Override
@@ -87,12 +90,41 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
+    public EventFullDto updateUserEvent(Long userId, Long eventId, UpdateEventDto updateEventDto) {
+        Optional<Event> optEvent = eventRepository.findById(eventId);
+        if (optEvent.isPresent()) {
+            Event event = optEvent.get();
+            if (event.getState().equals(EventStates.PUBLISHED)) {
+                throw new ValidationException("Published events cannot be modified");
+            }
+
+
+            return mapper.toEventFullDto(event);
+        } else {
+            throw makeEventNotFoundException(eventId);
+        }
+    }
+
     private void validateNewEvent(NewEventDto newEventDto) {
         if (newEventDto == null) {
             throw new ValidationException("New event of NULL received");
         } else if (newEventDto.getEventDate() == null
                     || newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ValidationException("New event should start in not less than 2 hours");
+        }
+    }
+
+    private void updateEventFields(Event event, UpdateEventDto updateEventDto) {
+        if (updateEventDto.getCategoryId() != null) {
+            event.setCategory(
+                    categoryRepository.findById(updateEventDto.getCategoryId())
+                            .orElseThrow(() -> new ValidationException("Category (id=" +
+                                    updateEventDto.getCategoryId() + ") doesn't exist"))
+            );
+        }
+        if (updateEventDto.getEventDate() != null) {
+            event.setEventDate(updateEventDto.getEventDate());
         }
     }
 
