@@ -32,7 +32,7 @@ public class EventFullDto {
     private String title;
 
     @NotNull
-    @Size(max = 2000)
+    @Size(min = 20, max = 2000)
     private String annotation;
 
     @NotNull

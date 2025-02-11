@@ -9,7 +9,7 @@ import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
-import ru.practicum.ewm.event.dto.UpdateEventDto;
+import ru.practicum.ewm.event.dto.UpdateUserEventDto;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
@@ -79,7 +79,7 @@ public class EventServiceImpl implements EventService {
             Optional<Event> optEvent = eventRepository.findById(eventId);
             if (optEvent.isPresent()) {
                 if (!optEvent.get().getInitiator().getId().equals(userId)) {
-                    throw new ValidationException("User (id=" + userId + ") has no event with id=" + eventId);
+                    throw makeUserHasNoEventValidationException(userId, eventId);
                 }
                 return mapper.toEventFullDto(optEvent.get());
             } else {
@@ -91,14 +91,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto updateUserEvent(Long userId, Long eventId, UpdateEventDto updateEventDto) {
+    public EventFullDto updateUserEvent(Long userId, Long eventId, UpdateUserEventDto updateUserEventDto) {
         Optional<Event> optEvent = eventRepository.findById(eventId);
         if (optEvent.isPresent()) {
             Event event = optEvent.get();
             if (event.getState().equals(EventStates.PUBLISHED)) {
                 throw new ValidationException("Published events cannot be modified");
             }
-
+            if (event.getInitiator().getId().equals(userId)) {
+                throw makeUserHasNoEventValidationException(userId, eventId);
+            }
+            updateEventFields(event, updateUserEventDto);
 
             return mapper.toEventFullDto(event);
         } else {
@@ -111,21 +114,38 @@ public class EventServiceImpl implements EventService {
             throw new ValidationException("New event of NULL received");
         } else if (newEventDto.getEventDate() == null
                     || newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ValidationException("New event should start in not less than 2 hours");
+            throw makeEventDateValidationException();
         }
     }
 
-    private void updateEventFields(Event event, UpdateEventDto updateEventDto) {
-        if (updateEventDto.getCategoryId() != null) {
-            event.setCategory(
-                    categoryRepository.findById(updateEventDto.getCategoryId())
-                            .orElseThrow(() -> new ValidationException("Category (id=" +
-                                    updateEventDto.getCategoryId() + ") doesn't exist"))
-            );
+    private void updateEventFields(Event event, UpdateUserEventDto updateUserEventDto) {
+        if (updateUserEventDto.getCategoryId() != null) {
+            event.setCategory(categoryRepository.findById(updateUserEventDto.getCategoryId())
+                                .orElseThrow(() -> new ValidationException("Category (id=" +
+                                                    updateUserEventDto.getCategoryId() + ") doesn't exist")));
         }
-        if (updateEventDto.getEventDate() != null) {
-            event.setEventDate(updateEventDto.getEventDate());
+        if (updateUserEventDto.getEventDate() != null) {
+            if (updateUserEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+                throw makeEventDateValidationException();
+            }
+            event.setEventDate(updateUserEventDto.getEventDate());
         }
+
+        if (updateUserEventDto.getTitle() != null) event.setTitle(updateUserEventDto.getTitle());
+        if (updateUserEventDto.getAnnotation() != null) event.setAnnotation(updateUserEventDto.getAnnotation());
+        if (updateUserEventDto.getDescription() != null) event.setDescription(updateUserEventDto.getDescription());
+        if (updateUserEventDto.getPaid() != null) event.setPaid(updateUserEventDto.getPaid());
+        if (updateUserEventDto.getParticipantLimit() != null) event.setParticipantLimit(
+                updateUserEventDto.getParticipantLimit());
+
+    }
+
+    private ValidationException makeUserHasNoEventValidationException(Long userId, Long eventId) {
+        return new ValidationException("User with id=" + userId + " has no event with id=" + eventId);
+    }
+
+    private ValidationException makeEventDateValidationException() {
+        return new ValidationException("Event should start in not less than 2 hours");
     }
 
     private NotFoundException makeEventNotFoundException(Long eventId) {

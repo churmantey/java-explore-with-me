@@ -3,6 +3,7 @@ package ru.practicum.ewm.event.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
@@ -66,5 +67,12 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         }
         return nativeQuery.getResultList();
     }
+
+//    public List<Event> getEventsByFiltersV2(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
+//                                          LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortTypes sortType,
+//                                          int from, int size) {
+//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+//
+//    }
 
 }
