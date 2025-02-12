@@ -40,13 +40,13 @@ public interface EventMapper {
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "locationLat", target = "location.lat")
     @Mapping(source = "locationLon", target = "location.lon")
-    @Mapping(target = "state", ignore = true)
+    @Mapping(target = "stateAction", ignore = true)
     UpdateUserEventDto toUpdateUserEventDto(Event event);
 
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "locationLat", target = "location.lat")
     @Mapping(source = "locationLon", target = "location.lon")
-    @Mapping(target = "state", ignore = true)
+    @Mapping(target = "stateAction", ignore = true)
     UpdateAdminEventDto toUpdateAdminEventDto(Event event);
 
 //    @AfterMapping

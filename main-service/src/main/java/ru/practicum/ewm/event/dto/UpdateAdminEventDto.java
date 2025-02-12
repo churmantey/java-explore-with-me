@@ -44,5 +44,5 @@ public class UpdateAdminEventDto {
 
     private Boolean requestModeration;
 
-    private StateActionAdmin state;
+    private StateActionAdmin stateAction;
 }

@@ -11,6 +11,7 @@ import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateUserEventDto;
 import ru.practicum.ewm.event.service.EventService;
+import ru.practicum.ewm.participation.dto.ParticipationRequestDto;
 import ru.practicum.ewm.statslogger.StatsLogger;
 
 import java.util.List;
@@ -58,8 +59,19 @@ public class EventPrivateController {
     public EventFullDto updateUserEvent(@PathVariable("userId") Long userId, @PathVariable("eventId") Long eventId,
                                          @RequestBody UpdateUserEventDto updateUserEventDto,
                                          HttpServletRequest request) {
-
+        log.info("PATCH user event , userId={}, eventId={}, data={}", userId, eventId, updateUserEventDto);
+        statsLogger.logIPAndPath(request);
         return eventService.updateUserEvent(userId, eventId, updateUserEventDto);
+    }
+
+    //Получение информации о запросах на участие в событии текущего пользователя
+    @GetMapping("/{eventId}/requests")
+    public List<ParticipationRequestDto> getUserEventRequests(@PathVariable("userId") Long userId,
+                                                              @PathVariable("eventId") Long eventId,
+                                                              HttpServletRequest request) {
+        log.info("GET user event requests, userId={}, eventId={}", userId, eventId);
+        statsLogger.logIPAndPath(request);
+        return eventService.getUserEventRequests(userId, eventId);
     }
 
 }

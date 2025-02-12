@@ -2,10 +2,12 @@ package ru.practicum.ewm.event.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
+import ru.practicum.ewm.event.StateActionUser;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
@@ -14,6 +16,9 @@ import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
+import ru.practicum.ewm.participation.dto.ParticipationRequestDto;
+import ru.practicum.ewm.participation.mapper.ParticipationRequestMapper;
+import ru.practicum.ewm.participation.repository.ParticipationRequestRepository;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
@@ -28,9 +33,12 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final ParticipationRequestRepository requestRepository;
     private final EventMapper mapper;
+    private final ParticipationRequestMapper requestMapper;
 
     @Override
+    @Transactional
     public EventFullDto createEvent(Long userId, NewEventDto newEventDto) {
         validateNewEvent(newEventDto);
         Optional<User> optUser = userRepository.findById(userId);
@@ -91,6 +99,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto updateUserEvent(Long userId, Long eventId, UpdateUserEventDto updateUserEventDto) {
         Optional<Event> optEvent = eventRepository.findById(eventId);
         if (optEvent.isPresent()) {
@@ -98,11 +107,29 @@ public class EventServiceImpl implements EventService {
             if (event.getState().equals(EventStates.PUBLISHED)) {
                 throw new ValidationException("Published events cannot be modified");
             }
-            if (event.getInitiator().getId().equals(userId)) {
+            if (!event.getInitiator().getId().equals(userId)) {
                 throw makeUserHasNoEventValidationException(userId, eventId);
             }
             updateEventFields(event, updateUserEventDto);
             return mapper.toEventFullDto(event);
+        } else {
+            throw makeEventNotFoundException(eventId);
+        }
+    }
+
+    @Override
+    public List<ParticipationRequestDto> getUserEventRequests(Long userId, Long eventId) {
+        if (!userRepository.existsById(userId)) {
+            throw makeUserNotFoundException(userId);
+        }
+        Optional<Event> optEvent = eventRepository.findById(eventId);
+        if (optEvent.isPresent()) {
+            Event event = optEvent.get();
+            if (!event.getInitiator().getId().equals(userId)) {
+                throw makeUserHasNoEventValidationException(userId, eventId);
+            }
+            return requestMapper.toParticipationRequestDto(
+                    requestRepository.findByEvent_IdOrderByIdAsc(eventId));
         } else {
             throw makeEventNotFoundException(eventId);
         }
@@ -136,6 +163,14 @@ public class EventServiceImpl implements EventService {
         if (updateUserEventDto.getPaid() != null) event.setPaid(updateUserEventDto.getPaid());
         if (updateUserEventDto.getParticipantLimit() != null) event.setParticipantLimit(
                 updateUserEventDto.getParticipantLimit());
+        if (updateUserEventDto.getStateAction() != null) {
+            switch (updateUserEventDto.getStateAction()) {
+                case CANCEL_REVIEW -> event.setState(EventStates.CANCELED);
+                case SEND_TO_REVIEW -> event.setState(EventStates.PENDING);
+                default -> throw new NotFoundException(
+                        "Unknown event state action: " + updateUserEventDto.getStateAction());
+            }
+        }
     }
 
     private ValidationException makeUserHasNoEventValidationException(Long userId, Long eventId) {

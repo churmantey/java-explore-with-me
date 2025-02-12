@@ -43,5 +43,5 @@ public class UpdateUserEventDto {
 
     private Boolean requestModeration;
 
-    private StateActionUser state;
+    private StateActionUser stateAction;
 }
