@@ -1,16 +1,15 @@
-package ru.practicum.ewm.participation.dto;
+package ru.practicum.ewm.request.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
-import ru.practicum.ewm.participation.RequestStates;
+import ru.practicum.ewm.request.RequestStates;
 
 import java.time.LocalDateTime;
 
 /**
- * DTO for {@link ru.practicum.ewm.participation.ParticipationRequest}
+ * DTO for {@link ru.practicum.ewm.request.ParticipationRequest}
  */
 @Data
 @NoArgsConstructor

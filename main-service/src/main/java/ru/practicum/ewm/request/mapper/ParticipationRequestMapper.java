@@ -1,8 +1,8 @@
-package ru.practicum.ewm.participation.mapper;
+package ru.practicum.ewm.request.mapper;
 
 import org.mapstruct.*;
-import ru.practicum.ewm.participation.ParticipationRequest;
-import ru.practicum.ewm.participation.dto.ParticipationRequestDto;
+import ru.practicum.ewm.request.ParticipationRequest;
+import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 
 import java.util.List;
 

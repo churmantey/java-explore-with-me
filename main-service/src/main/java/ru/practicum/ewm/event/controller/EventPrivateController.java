@@ -11,7 +11,7 @@ import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateUserEventDto;
 import ru.practicum.ewm.event.service.EventService;
-import ru.practicum.ewm.participation.dto.ParticipationRequestDto;
+import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 import ru.practicum.ewm.statslogger.StatsLogger;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package ru.practicum.ewm.participation;
+package ru.practicum.ewm.request;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
