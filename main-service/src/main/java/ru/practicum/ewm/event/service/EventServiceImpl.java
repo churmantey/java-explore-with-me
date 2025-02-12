@@ -102,7 +102,6 @@ public class EventServiceImpl implements EventService {
                 throw makeUserHasNoEventValidationException(userId, eventId);
             }
             updateEventFields(event, updateUserEventDto);
-
             return mapper.toEventFullDto(event);
         } else {
             throw makeEventNotFoundException(eventId);
@@ -137,7 +136,6 @@ public class EventServiceImpl implements EventService {
         if (updateUserEventDto.getPaid() != null) event.setPaid(updateUserEventDto.getPaid());
         if (updateUserEventDto.getParticipantLimit() != null) event.setParticipantLimit(
                 updateUserEventDto.getParticipantLimit());
-
     }
 
     private ValidationException makeUserHasNoEventValidationException(Long userId, Long eventId) {
