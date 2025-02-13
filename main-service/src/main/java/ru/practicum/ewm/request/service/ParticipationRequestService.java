@@ -12,4 +12,6 @@ public interface ParticipationRequestService {
 
     List<ParticipationRequestDto> getEventRequests(Long eventId);
 
+    ParticipationRequestDto createRequest(Long userId, Long eventId);
+
 }

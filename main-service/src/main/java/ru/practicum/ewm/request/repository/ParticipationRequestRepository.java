@@ -7,8 +7,11 @@ import java.util.List;
 
 public interface ParticipationRequestRepository extends JpaRepository<ParticipationRequest, Long> {
 
+    boolean existsByRequestor_IdAndEvent_Id(Long userId, Long eventId);
+
     List<ParticipationRequest> findByEvent_IdOrderByIdAsc(Long eventId);
 
     List<ParticipationRequest> findByRequestor_IdOrderByIdAsc(Long userId);
+
 
 }

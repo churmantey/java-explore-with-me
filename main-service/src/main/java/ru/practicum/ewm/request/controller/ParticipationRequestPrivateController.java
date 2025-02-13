@@ -24,7 +24,7 @@ public class ParticipationRequestPrivateController {
     @PostMapping
     ParticipationRequestDto createRequest(@PathVariable("userId") Long userId, @RequestParam("eventId") Long eventId,
                                           HttpServletRequest request) {
-        return null;
+        return requestService.createRequest(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
