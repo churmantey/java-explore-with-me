@@ -1,6 +1,8 @@
 package ru.practicum.ewm.event.service;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.ewm.event.EventSortTypes;
+import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
@@ -15,6 +17,9 @@ public interface EventService {
     List<EventShortDto> getEventsByFilters(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
                                            LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortTypes sortType,
                                            int from, int size);
+
+    List<EventFullDto> getAdminEventsByFilters(List<Long> users, List<EventStates> states, List<Long> categories,
+                                               LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
 
     EventFullDto getEventById(Long eventId);
 

@@ -27,9 +27,12 @@ public interface EventMapper {
     @Mapping(source = "locationLon", target = "location.lon")
     EventFullDto toEventFullDto(Event event);
 
+    List<EventFullDto> toEventFullDto(List<Event> eventList);
+
     EventShortDto toEventShortDto(Event event);
 
     List<EventShortDto> toEventShortDtoList(List<Event> eventList);
+
 
     @Mapping(source = "categoryId", target = "category.id")
     @Mapping(source = "location.lat", target = "locationLat")

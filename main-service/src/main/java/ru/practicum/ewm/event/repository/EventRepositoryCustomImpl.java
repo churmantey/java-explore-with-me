@@ -3,7 +3,10 @@ package ru.practicum.ewm.event.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
@@ -68,7 +71,21 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         return nativeQuery.getResultList();
     }
 
-//    public List<Event> getEventsByFiltersV2(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
+    @Override
+    public List<Event> getAdminEventsByFilters(List<Long> users, List<EventStates> states, List<Long> categories,
+                                               LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Event> cq = cb.createQuery(Event.class);
+        Root<Event> event = cq.from(Event.class);
+        cq.select(event);
+        TypedQuery<Event> q = entityManager.createQuery(cq);
+        List<Event> events = q.getResultList();
+
+        return events;
+    }
+
+    //    public List<Event> getEventsByFiltersV2(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
 //                                          LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortTypes sortType,
 //                                          int from, int size) {
 //        CriteriaBuilder cb = entityManager.getCriteriaBuilder();

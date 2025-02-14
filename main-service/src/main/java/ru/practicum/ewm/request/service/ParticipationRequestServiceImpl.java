@@ -1,12 +1,15 @@
 package ru.practicum.ewm.request.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.repository.EventRepository;
+import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.request.ParticipationRequest;
 import ru.practicum.ewm.request.RequestStates;
@@ -32,16 +35,17 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     public List<ParticipationRequestDto> getEventRequests(Long eventId) {
-        return List.of();
+        return mapper.toParticipationRequestDto(requestRepository.findByEvent_IdOrderByIdAsc(eventId));
     }
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
-        return List.of();
+        return mapper.toParticipationRequestDto(requestRepository.findByRequestor_IdOrderByIdAsc(userId));
     }
 
     @Override
     @Transactional
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         User requestor = getValidUser(userId);
         Event event = getValidEvent(eventId);
@@ -62,7 +66,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (user == null) throw new ValidationException("Null user value received");
         if (event == null) throw new ValidationException("Null event value received");
         if (!event.getState().equals(EventStates.PUBLISHED))
-            throw new ValidationException("Event with id=" + event.getId() + " isn't published yet");
+            throw new NotFoundException("Event with id=" + event.getId() + " is not available");
         // проверка повторного запроса на участие
         if (requestRepository.existsByRequestor_IdAndEvent_Id(user.getId(), event.getId())) {
             throw new ValidationException("User with id=" + user.getId() + " already has a request for " +
@@ -85,12 +89,12 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     private User getValidUser(Long userId) {
         Optional<User> optUser = userRepository.findById(userId);
-        return optUser.orElseThrow(() -> new ValidationException("User not found, id=" + userId));
+        return optUser.orElseThrow(() -> new NotFoundException("User not found, id=" + userId));
     }
 
     private Event getValidEvent(Long eventId) {
         Optional<Event> optEvent = eventRepository.findById(eventId);
-        return optEvent.orElseThrow(() -> new ValidationException("Event not found, id=" + eventId));
+        return optEvent.orElseThrow(() -> new NotFoundException("Event not found, id=" + eventId));
     }
 
 }

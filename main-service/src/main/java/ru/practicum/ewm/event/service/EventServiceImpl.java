@@ -61,6 +61,13 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<EventFullDto> getAdminEventsByFilters(List<Long> users, List<EventStates> states, List<Long> categories,
+                                                      LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                      int from, int size) {
+        return mapper.toEventFullDto(eventRepository.);
+    }
+
+    @Override
     public EventFullDto getEventById(Long eventId) {
         Optional<Event> optEvent = eventRepository.findById(eventId);
         if (optEvent.isPresent()) {
