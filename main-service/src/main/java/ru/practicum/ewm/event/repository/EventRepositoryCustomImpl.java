@@ -4,15 +4,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -78,7 +77,21 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
         Root<Event> event = cq.from(Event.class);
+
+        List<Predicate> conditions = new LinkedList<>();
+        if (users != null && !users.isEmpty()) {
+
+            Path<Object> iid = event.get("initiator");
+            Path<Object> initiator = event.get("initiator");
+            Path<Object> id = initiator.get("id");
+            conditions.add(cb.in(event.get("initiator").get("id")).value(users));
+        }
+
         cq.select(event);
+        cq.where(conditions.toArray(new Predicate[0]));
+        cq.orderBy(cb.asc(event.get("id")));
+
+
         TypedQuery<Event> q = entityManager.createQuery(cq);
         List<Event> events = q.getResultList();
 
