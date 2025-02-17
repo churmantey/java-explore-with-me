@@ -4,12 +4,10 @@ package ru.practicum.ewm.event.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.event.dto.EventFullDto;
+import ru.practicum.ewm.event.dto.UpdateAdminEventDto;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.statslogger.StatsLogger;
 
@@ -38,6 +36,14 @@ public class EventAdminController {
                 users, states, categories, rangeStart, rangeEnd, from, size);
         statsLogger.logIPAndPath(request);
         return eventService.getAdminEventsByFilters(users, states, categories, rangeStart, rangeEnd, from, size);
+    }
+
+    @PatchMapping("/{eventId}")
+    public EventFullDto updateAdminEvent(@PathVariable("eventId") Long eventId,
+                                         @RequestBody UpdateAdminEventDto adminDto, HttpServletRequest request) {
+        log.info("PATCH admin event , adminDto={}", adminDto);
+        statsLogger.logIPAndPath(request);
+        return eventService.updateAdminEvent(eventId, adminDto);
     }
 
 }

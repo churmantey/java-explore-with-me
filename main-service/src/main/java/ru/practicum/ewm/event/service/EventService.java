@@ -3,10 +3,7 @@ package ru.practicum.ewm.event.service;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
-import ru.practicum.ewm.event.dto.EventFullDto;
-import ru.practicum.ewm.event.dto.EventShortDto;
-import ru.practicum.ewm.event.dto.NewEventDto;
-import ru.practicum.ewm.event.dto.UpdateUserEventDto;
+import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 
 import java.time.LocalDateTime;
@@ -30,6 +27,8 @@ public interface EventService {
     EventFullDto getUserEventById(Long userId, Long eventId);
 
     EventFullDto updateUserEvent(Long userId, Long eventId, UpdateUserEventDto updateUserEventDto);
+
+    EventFullDto updateAdminEvent(Long eventId, UpdateAdminEventDto updateAdminEventDto);
 
     List<ParticipationRequestDto> getUserEventRequests(Long userId, Long eventId);
 }

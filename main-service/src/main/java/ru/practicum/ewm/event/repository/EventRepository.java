@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.ewm.event.Event;
+import ru.practicum.ewm.exception.NotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, EventRepositoryCustom {
@@ -22,5 +24,10 @@ public interface EventRepository extends JpaRepository<Event, Long>, EventReposi
     List<Event> findByInitiator_IdOrderByIdAsc(@Param("userId") Long id,
                                                @Param("from") int from,
                                                @Param("size") int size);
+
+    default Event getExistingEvent(Long eventId) {
+        Optional<Event> optEvent = findById(eventId);
+        return optEvent.orElseThrow(() -> new NotFoundException("Event not found, id=" + eventId));
+    }
 
 }

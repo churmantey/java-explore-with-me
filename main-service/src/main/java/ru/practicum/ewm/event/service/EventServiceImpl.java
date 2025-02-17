@@ -7,10 +7,7 @@ import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
-import ru.practicum.ewm.event.dto.EventFullDto;
-import ru.practicum.ewm.event.dto.EventShortDto;
-import ru.practicum.ewm.event.dto.NewEventDto;
-import ru.practicum.ewm.event.dto.UpdateUserEventDto;
+import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
@@ -23,7 +20,6 @@ import ru.practicum.ewm.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,16 +36,12 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto createEvent(Long userId, NewEventDto newEventDto) {
         validateNewEvent(newEventDto);
-        Optional<User> optUser = userRepository.findById(userId);
-        if (optUser.isPresent()) {
-            Event newEvent = mapper.toEntity(newEventDto);
-            newEvent.setInitiator(optUser.get());
-            newEvent.setCreatedOn(LocalDateTime.now());
-            newEvent.setState(EventStates.PENDING);
-            return mapper.toEventFullDto(eventRepository.save(newEvent));
-        } else {
-            throw makeUserNotFoundException(userId);
-        }
+        User user = userRepository.getExistingUser(userId);
+        Event newEvent = mapper.toEntity(newEventDto);
+        newEvent.setInitiator(user);
+        newEvent.setCreatedOn(LocalDateTime.now());
+        newEvent.setState(EventStates.PENDING);
+        return mapper.toEventFullDto(eventRepository.save(newEvent));
     }
 
     @Override
@@ -64,18 +56,13 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> getAdminEventsByFilters(List<Long> users, List<EventStates> states, List<Long> categories,
                                                       LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                       int from, int size) {
-        return mapper.toEventFullDto(eventRepository.);
+        return mapper.toEventFullDto(eventRepository.getAdminEventsByFilters(users, states, categories,
+                rangeStart, rangeEnd, from, size));
     }
 
     @Override
     public EventFullDto getEventById(Long eventId) {
-        Optional<Event> optEvent = eventRepository.findById(eventId);
-        if (optEvent.isPresent()) {
-            return mapper.toEventFullDto(optEvent.get());
-        }
-        else {
-           throw makeEventNotFoundException(eventId);
-        }
+        return mapper.toEventFullDto(eventRepository.getExistingEvent(eventId));
     }
 
     @Override
@@ -90,15 +77,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getUserEventById(Long userId, Long eventId) {
         if (userRepository.existsById(userId)) {
-            Optional<Event> optEvent = eventRepository.findById(eventId);
-            if (optEvent.isPresent()) {
-                if (!optEvent.get().getInitiator().getId().equals(userId)) {
-                    throw makeUserHasNoEventValidationException(userId, eventId);
-                }
-                return mapper.toEventFullDto(optEvent.get());
-            } else {
-                throw makeEventNotFoundException(eventId);
+            Event event = eventRepository.getExistingEvent(eventId);
+            if (!event.getInitiator().getId().equals(userId)) {
+                throw makeUserHasNoEventValidationException(userId, eventId);
             }
+            return mapper.toEventFullDto(event);
         } else {
             throw makeUserNotFoundException(userId);
         }
@@ -107,20 +90,21 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventFullDto updateUserEvent(Long userId, Long eventId, UpdateUserEventDto updateUserEventDto) {
-        Optional<Event> optEvent = eventRepository.findById(eventId);
-        if (optEvent.isPresent()) {
-            Event event = optEvent.get();
-            if (event.getState().equals(EventStates.PUBLISHED)) {
-                throw new ValidationException("Published events cannot be modified");
-            }
-            if (!event.getInitiator().getId().equals(userId)) {
-                throw makeUserHasNoEventValidationException(userId, eventId);
-            }
-            updateEventFields(event, updateUserEventDto);
-            return mapper.toEventFullDto(event);
-        } else {
-            throw makeEventNotFoundException(eventId);
+        Event event = eventRepository.getExistingEvent(eventId);
+        if (event.getState().equals(EventStates.PUBLISHED)) {
+            throw new ValidationException("Published events cannot be modified");
         }
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw makeUserHasNoEventValidationException(userId, eventId);
+        }
+        updateEventFields(event, updateUserEventDto);
+        return mapper.toEventFullDto(event);
+    }
+
+    @Override
+    @Transactional
+    public EventFullDto updateAdminEvent(Long eventId, UpdateAdminEventDto updateAdminEventDto) {
+        return null;
     }
 
     @Override
@@ -128,17 +112,12 @@ public class EventServiceImpl implements EventService {
         if (!userRepository.existsById(userId)) {
             throw makeUserNotFoundException(userId);
         }
-        Optional<Event> optEvent = eventRepository.findById(eventId);
-        if (optEvent.isPresent()) {
-            Event event = optEvent.get();
-            if (!event.getInitiator().getId().equals(userId)) {
-                throw makeUserHasNoEventValidationException(userId, eventId);
-            }
-            return requestMapper.toParticipationRequestDto(
-                    requestRepository.findByEvent_IdOrderByIdAsc(eventId));
-        } else {
-            throw makeEventNotFoundException(eventId);
+        Event event = eventRepository.getExistingEvent(eventId);
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw makeUserHasNoEventValidationException(userId, eventId);
         }
+        return requestMapper.toParticipationRequestDto(
+                requestRepository.findByEvent_IdOrderByIdAsc(eventId));
     }
 
     private void validateNewEvent(NewEventDto newEventDto) {
@@ -149,6 +128,45 @@ public class EventServiceImpl implements EventService {
             throw makeEventDateValidationException();
         }
     }
+
+    private void updateAdminEventFields(Event event, UpdateAdminEventDto updateAdminEventDto) {
+        if (updateAdminEventDto.getCategoryId() != null) {
+            event.setCategory(categoryRepository.findById(updateAdminEventDto.getCategoryId())
+                    .orElseThrow(() -> new ValidationException("Category (id=" +
+                            updateAdminEventDto.getCategoryId() + ") doesn't exist")));
+        }
+        if (updateAdminEventDto.getEventDate() != null) {
+            if (updateAdminEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+                throw makeEventDateValidationException();
+            }
+            event.setEventDate(updateAdminEventDto.getEventDate());
+        }
+
+        if (updateAdminEventDto.getTitle() != null) event.setTitle(updateAdminEventDto.getTitle());
+        if (updateAdminEventDto.getAnnotation() != null) event.setAnnotation(updateAdminEventDto.getAnnotation());
+        if (updateAdminEventDto.getDescription() != null) event.setDescription(updateAdminEventDto.getDescription());
+        if (updateAdminEventDto.getPaid() != null) event.setPaid(updateAdminEventDto.getPaid());
+        if (updateAdminEventDto.getParticipantLimit() != null) event.setParticipantLimit(
+                updateAdminEventDto.getParticipantLimit());
+        if (updateAdminEventDto.getStateAction() != null) {
+            switch (updateAdminEventDto.getStateAction()) {
+                case REJECT_EVENT:
+                    event.setState(EventStates.CANCELED);
+                    break;
+                case PUBLISH_EVENT:
+                    if (event.getEventDate().minusHours(1).isBefore(LocalDateTime.now())) {
+                        throw new ValidationException("Can't publish event - event date is too soon.");
+                    }
+                    event.setState(EventStates.PUBLISHED);
+                    event.setPublishedOn(LocalDateTime.now());
+                    break;
+                default:
+                    throw new NotFoundException(
+                        "Unknown event state action: " + updateAdminEventDto.getStateAction());
+            }
+        }
+    }
+
 
     private void updateEventFields(Event event, UpdateUserEventDto updateUserEventDto) {
         if (updateUserEventDto.getCategoryId() != null) {

@@ -3,8 +3,10 @@ package ru.practicum.ewm.event.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
@@ -79,24 +81,34 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         Root<Event> event = cq.from(Event.class);
 
         List<Predicate> conditions = new LinkedList<>();
-        if (users != null && !users.isEmpty()) {
 
-            Path<Object> iid = event.get("initiator");
-            Path<Object> initiator = event.get("initiator");
-            Path<Object> id = initiator.get("id");
+        if (users != null && !users.isEmpty()) {
             conditions.add(cb.in(event.get("initiator").get("id")).value(users));
+        }
+        if (states != null && !states.isEmpty()) {
+            conditions.add(cb.in(event.get("state")).value(states));
+        }
+        if (categories != null && !categories.isEmpty()) {
+            conditions.add(cb.in(event.get("category").get("id")).value(categories));
+        }
+        if (rangeStart != null) {
+            conditions.add(cb.greaterThanOrEqualTo(event.get("eventDate"), rangeStart));
+        }
+        if (rangeEnd != null) {
+            conditions.add(cb.lessThanOrEqualTo(event.get("eventDate"), rangeEnd));
         }
 
         cq.select(event);
         cq.where(conditions.toArray(new Predicate[0]));
         cq.orderBy(cb.asc(event.get("id")));
 
-
-        TypedQuery<Event> q = entityManager.createQuery(cq);
-        List<Event> events = q.getResultList();
-
-        return events;
+        return entityManager.createQuery(cq)
+                .setFirstResult(from)
+                .setMaxResults(size)
+                .getResultList();
     }
+
+
 
     //    public List<Event> getEventsByFiltersV2(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
 //                                          LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortTypes sortType,

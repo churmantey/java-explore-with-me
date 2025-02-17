@@ -20,7 +20,6 @@ import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,8 +46,8 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
-        User requestor = getValidUser(userId);
-        Event event = getValidEvent(eventId);
+        User requestor = userRepository.getExistingUser(userId);
+        Event event = eventRepository.getExistingEvent(eventId);
         validateNewRequest(requestor, event);
         ParticipationRequest request = new ParticipationRequest();
         request.setRequestor(requestor);
@@ -85,16 +84,6 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     private boolean eventHasFreeSpots(Event event) {
         return event.getParticipantLimit() == null || event.getParticipantLimit().equals(0)
                 || event.getConfirmedRequests() < event.getParticipantLimit();
-    }
-
-    private User getValidUser(Long userId) {
-        Optional<User> optUser = userRepository.findById(userId);
-        return optUser.orElseThrow(() -> new NotFoundException("User not found, id=" + userId));
-    }
-
-    private Event getValidEvent(Long eventId) {
-        Optional<Event> optEvent = eventRepository.findById(eventId);
-        return optEvent.orElseThrow(() -> new NotFoundException("Event not found, id=" + eventId));
     }
 
 }
