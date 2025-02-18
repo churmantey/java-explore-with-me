@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ParticipationRequestMapper {
-    @Mapping(source = "requestor", target = "requestor.id")
+    @Mapping(source = "requester", target = "requester.id")
     @Mapping(source = "event", target = "event.id")
     ParticipationRequest toEntity(ParticipationRequestDto participationRequestDto);
 

@@ -31,15 +31,16 @@ public class ParticipationRequest {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "requestor_id")
-    private User requestor;
+    @JoinColumn(name = "requester_id")
+    private User requester;
 
     @Column(name = "created_on")
-    private LocalDateTime created;
+    private
+    LocalDateTime created;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
-    private RequestStates state;
+    private RequestStates status;
 
     @Override
     public final boolean equals(Object o) {

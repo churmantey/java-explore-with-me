@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.event.dto.EventFullDto;
-import ru.practicum.ewm.event.dto.EventShortDto;
-import ru.practicum.ewm.event.dto.NewEventDto;
-import ru.practicum.ewm.event.dto.UpdateUserEventDto;
+import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 import ru.practicum.ewm.statslogger.StatsLogger;
@@ -72,6 +69,19 @@ public class EventPrivateController {
         log.info("GET user event requests, userId={}, eventId={}", userId, eventId);
         statsLogger.logIPAndPath(request);
         return eventService.getUserEventRequests(userId, eventId);
+    }
+
+    //PATCH /users/{userId}/events/{eventId}/requests
+    //Изменение статуса (подтверждена, отменена) заявок на участие в событии текущего пользователя
+    @PatchMapping("/{eventId}/requests")
+    public EventRequestStatusUpdateResponse updateRequestStates(
+                                                            @PathVariable("userId") Long userId,
+                                                            @PathVariable("eventId") Long eventId,
+                                                            @RequestBody EventRequestStatusUpdateRequest updateRequest,
+                                                            HttpServletRequest request) {
+        log.info("PATCH requests states, userId={}, eventId={}, updateRequest={}", userId, eventId, updateRequest);
+        statsLogger.logIPAndPath(request);
+        return eventService.updateRequestStates(userId, eventId, updateRequest);
     }
 
 }

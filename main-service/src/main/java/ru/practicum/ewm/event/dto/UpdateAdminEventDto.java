@@ -1,5 +1,6 @@
 package ru.practicum.ewm.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -9,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.ewm.event.StateActionAdmin;
 import ru.practicum.ewm.event.StateActionUser;
+import ru.practicum.ewm.stats.dto.HitDto;
 
 import java.time.LocalDateTime;
 
@@ -33,6 +35,7 @@ public class UpdateAdminEventDto {
     private String description;
 
     @Future
+    @JsonFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
     private LocalDateTime eventDate;
 
     private LocationDto location;

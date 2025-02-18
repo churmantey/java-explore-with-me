@@ -25,8 +25,8 @@ public class ParticipationRequestDto {
 
     @NotNull
     @Positive
-    private Long requestor;
+    private Long requester;
 
     private LocalDateTime created;
-    private RequestStates state;
+    private RequestStates status;
 }

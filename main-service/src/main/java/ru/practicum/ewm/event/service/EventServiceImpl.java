@@ -104,7 +104,12 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventFullDto updateAdminEvent(Long eventId, UpdateAdminEventDto updateAdminEventDto) {
-        return null;
+        Event event = eventRepository.getExistingEvent(eventId);
+        if (event.getState().equals(EventStates.PUBLISHED)) {
+            throw new ValidationException("Published events cannot be modified");
+        }
+        updateAdminEventFields(event, updateAdminEventDto);
+        return mapper.toEventFullDto(event);
     }
 
     @Override
@@ -118,6 +123,12 @@ public class EventServiceImpl implements EventService {
         }
         return requestMapper.toParticipationRequestDto(
                 requestRepository.findByEvent_IdOrderByIdAsc(eventId));
+    }
+
+    @Override
+    public EventRequestStatusUpdateResponse updateRequestStates(Long userId, Long eventId,
+                                                                EventRequestStatusUpdateRequest updateRequest) {
+        return null;
     }
 
     private void validateNewEvent(NewEventDto newEventDto) {
@@ -136,9 +147,6 @@ public class EventServiceImpl implements EventService {
                             updateAdminEventDto.getCategoryId() + ") doesn't exist")));
         }
         if (updateAdminEventDto.getEventDate() != null) {
-            if (updateAdminEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw makeEventDateValidationException();
-            }
             event.setEventDate(updateAdminEventDto.getEventDate());
         }
 
@@ -166,7 +174,6 @@ public class EventServiceImpl implements EventService {
             }
         }
     }
-
 
     private void updateEventFields(Event event, UpdateUserEventDto updateUserEventDto) {
         if (updateUserEventDto.getCategoryId() != null) {

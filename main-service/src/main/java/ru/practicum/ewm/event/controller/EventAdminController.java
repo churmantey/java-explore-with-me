@@ -1,14 +1,17 @@
 package ru.practicum.ewm.event.controller;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateAdminEventDto;
 import ru.practicum.ewm.event.service.EventService;
+import ru.practicum.ewm.stats.dto.HitDto;
 import ru.practicum.ewm.statslogger.StatsLogger;
 
 import java.time.LocalDateTime;
@@ -27,8 +30,10 @@ public class EventAdminController {
     public List<EventFullDto> getEventsByFilters(@RequestParam List<Long> users,
                                                  @RequestParam List<EventStates> states,
                                                  @RequestParam List<Long> categories,
-                                                 @RequestParam LocalDateTime rangeStart,
-                                                 @RequestParam LocalDateTime rangeEnd,
+                                                 @RequestParam @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
+                                                     LocalDateTime rangeStart,
+                                                 @RequestParam @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
+                                                     LocalDateTime rangeEnd,
                                                  @RequestParam(name = "from", defaultValue = "0") int from,
                                                  @RequestParam(name = "size", defaultValue = "10") int size,
                                                  HttpServletRequest request) {

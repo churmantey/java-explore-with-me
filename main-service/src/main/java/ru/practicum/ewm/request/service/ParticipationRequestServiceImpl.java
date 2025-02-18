@@ -19,6 +19,7 @@ import ru.practicum.ewm.request.repository.ParticipationRequestRepository;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,7 +40,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
-        return mapper.toParticipationRequestDto(requestRepository.findByRequestor_IdOrderByIdAsc(userId));
+        return mapper.toParticipationRequestDto(requestRepository.findByRequester_IdOrderByIdAsc(userId));
     }
 
     @Override
@@ -50,15 +51,28 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         Event event = eventRepository.getExistingEvent(eventId);
         validateNewRequest(requestor, event);
         ParticipationRequest request = new ParticipationRequest();
-        request.setRequestor(requestor);
+        request.setRequester(requestor);
         request.setEvent(event);
+        request.setCreated(LocalDateTime.now());
         if (!event.getRequestModeration() || event.getParticipantLimit().equals(0)) {
-            request.setState(RequestStates.CONFIRMED);
+            request.setStatus(RequestStates.CONFIRMED);
             event.setConfirmedRequests(event.getConfirmedRequests()+1);
         } else {
-            request.setState(RequestStates.PENDING);
+            request.setStatus(RequestStates.PENDING);
         }
         return mapper.toParticipationRequestDto(requestRepository.save(request));
+    }
+
+    @Override
+    @Transactional
+    public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
+        User user = userRepository.getExistingUser(userId);
+        ParticipationRequest request = requestRepository.getExistingRequest(requestId);
+        if (!request.getRequester().getId().equals(userId)) {
+            throw new ValidationException("User with id=" + userId + " has no request with id=" + requestId);
+        }
+        request.setStatus(RequestStates.REJECTED);
+        return null;
     }
 
     private void validateNewRequest(User user, Event event) {
@@ -67,7 +81,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (!event.getState().equals(EventStates.PUBLISHED))
             throw new NotFoundException("Event with id=" + event.getId() + " is not available");
         // проверка повторного запроса на участие
-        if (requestRepository.existsByRequestor_IdAndEvent_Id(user.getId(), event.getId())) {
+        if (requestRepository.existsByRequester_IdAndEvent_Id(user.getId(), event.getId())) {
             throw new ValidationException("User with id=" + user.getId() + " already has a request for " +
                     "event with id=" + event.getId());
         }
