@@ -68,6 +68,15 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public EventFullDto getPublishedEventById(Long eventId) {
+        Event event = eventRepository.getExistingEvent(eventId);
+        if (!event.getState().equals(EventStates.PUBLISHED)) {
+            throw new NotFoundException("Event with id=" + eventId + " is not published");
+        }
+        return mapper.toEventFullDto(event);
+    }
+
+    @Override
     public List<EventShortDto> getUserEvents(Long userId, int from, int size) {
         if (userRepository.existsById(userId)) {
             return mapper.toEventShortDtoList(eventRepository.findByInitiator_IdOrderByIdAsc(userId, from, size));

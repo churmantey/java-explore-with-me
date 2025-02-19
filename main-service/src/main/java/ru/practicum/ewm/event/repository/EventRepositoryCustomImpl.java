@@ -12,10 +12,7 @@ import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 
@@ -26,6 +23,55 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
     public List<Event> getEventsByFilters(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
                                           LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortTypes sortType,
                                           int from, int size) {
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Event> cq = cb.createQuery(Event.class);
+        Root<Event> event = cq.from(Event.class);
+
+        List<Predicate> conditions = new ArrayList<>();
+
+        conditions.add(cb.equal(event.get("state"), EventStates.PUBLISHED));
+        if (text != null && !text.isEmpty()) {
+            String searchPattern = "%" + text + "%";
+            conditions.add(cb.or(cb.like(cb.lower(event.get("title")), searchPattern),
+                                 cb.like(cb.lower(event.get("annotation")), searchPattern),
+                                 cb.like(cb.lower(event.get("description")), searchPattern)));
+        }
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            conditions.add(cb.in(event.get("category").get("id")).value(categoryIds));
+        }
+        if (paid != null ) {
+            conditions.add(cb.equal(event.get("paid"), paid));
+        }
+        if (rangeStart == null && rangeEnd == null) {
+            conditions.add(cb.greaterThanOrEqualTo(event.get("eventDate"), LocalDateTime.now()));
+        } else {
+            if (rangeStart != null) {
+                conditions.add(cb.greaterThanOrEqualTo(event.get("eventDate"), rangeStart));
+            }
+            if (rangeEnd != null) {
+                conditions.add(cb.lessThanOrEqualTo(event.get("eventDate"), rangeEnd));
+            }
+        }
+        if (onlyAvailable != null && onlyAvailable) {
+            conditions.add(cb.lt(event.get("confirmedRequests"), event.get("participantLimit")));
+        }
+        cq.select(event);
+        cq.where(conditions.toArray(new Predicate[0]));
+
+        switch (sortType) {
+            case EVENT_DATE -> cq.orderBy(cb.asc(event.get("eventDate")));
+            case VIEWS -> cq.orderBy(cb.desc(event.get("views")));
+            default -> cq.orderBy(cb.asc(event.get("id")));
+        }
+
+        return entityManager.createQuery(cq)
+                .setFirstResult(from)
+                .setMaxResults(size)
+                .getResultList();
+
+
+/*
         Map<String, Object> queryParameters = new HashMap<>();
 
         StringBuilder query = new StringBuilder("SELECT * from events e ");
@@ -70,6 +116,8 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
             nativeQuery.setParameter(entry.getKey(), entry.getValue());
         }
         return nativeQuery.getResultList();
+*/
+
     }
 
     @Override
