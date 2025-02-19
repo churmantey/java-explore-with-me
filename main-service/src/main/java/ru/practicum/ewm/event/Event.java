@@ -2,6 +2,7 @@ package ru.practicum.ewm.event;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -80,9 +81,11 @@ public class Event {
     @Column(name = "state")
     private EventStates state;
 
+    @PositiveOrZero
     @Column(name = "confirmed_requests")
     private long confirmedRequests;
 
+    @PositiveOrZero
     @Column(name = "views")
     private long views;
 
@@ -113,5 +116,24 @@ public class Event {
                 : getClass().hashCode();
     }
 
+    public boolean hasFreeSpots() {
+        return this.getParticipantLimit() == null || this.getParticipantLimit().equals(0)
+                || this.getConfirmedRequests() < this.getParticipantLimit();
 
+    }
+
+    public void addConfirm() {
+        this.confirmedRequests++;
+    }
+    public void removeConfirm() {
+        this.confirmedRequests--;
+    }
+
+    public void addView() {
+        this.views++;
+    }
+
+    public void removeView() {
+        this.views--;
+    }
 }

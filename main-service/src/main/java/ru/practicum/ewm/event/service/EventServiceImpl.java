@@ -12,6 +12,8 @@ import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
+import ru.practicum.ewm.request.ParticipationRequest;
+import ru.practicum.ewm.request.RequestStates;
 import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 import ru.practicum.ewm.request.mapper.ParticipationRequestMapper;
 import ru.practicum.ewm.request.repository.ParticipationRequestRepository;
@@ -126,9 +128,59 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventRequestStatusUpdateResponse updateRequestStates(Long userId, Long eventId,
                                                                 EventRequestStatusUpdateRequest updateRequest) {
-        return null;
+        User user = userRepository.getExistingUser(userId);
+        Event event = eventRepository.getExistingEvent(eventId);
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw makeUserHasNoEventValidationException(userId, eventId);
+        }
+        if (!event.getRequestModeration() || event.getParticipantLimit() == null
+                || event.getParticipantLimit().equals(0)) {
+            throw new ValidationException("Event with id=" + event.getId() +
+                    " has no request moderation");
+        }
+        List<ParticipationRequest> requests = requestRepository.findAllById(updateRequest.getRequestIds());
+        // проверка на наличие запросов не находящихся в ожидании
+        if (requests.stream()
+                .anyMatch(request -> !request.getStatus().equals(RequestStates.PENDING))) {
+            throw new ValidationException("Some requests are not in pending state!");
+        }
+        // проверка на наличие запросов на другое событие
+        if (requests.stream()
+                .anyMatch(request -> !request.getEvent().getId().equals(eventId))) {
+            throw new ValidationException("Some requests are for other events!");
+        }
+
+        EventRequestStatusUpdateResponse response = new EventRequestStatusUpdateResponse();
+        switch (updateRequest.getStatus()) {
+            case CONFIRMED:
+                if (!event.hasFreeSpots()) {
+                    throw new ValidationException("Event with id=" + event.getId() +
+                            " is fully booked, no more requests allowed");
+                }
+                for (ParticipationRequest request : requests) {
+                    if (event.hasFreeSpots()) {
+                        request.setStatus(RequestStates.CONFIRMED);
+                        response.getConfirmedRequests().add(requestMapper.toParticipationRequestDto(request));
+                        event.addConfirm();
+                    } else {
+                        request.setStatus(RequestStates.REJECTED);
+                        response.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
+                    }
+                }
+                break;
+            case REJECTED:
+                for (ParticipationRequest request : requests) {
+                    request.setStatus(RequestStates.REJECTED);
+                    response.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
+                }
+                break;
+            default:
+                throw new ValidationException("Unknown request status: " + updateRequest.getStatus());
+        }
+        return response;
     }
 
     private void validateNewEvent(NewEventDto newEventDto) {

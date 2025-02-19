@@ -1,12 +1,15 @@
 package ru.practicum.ewm.request.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.ewm.request.RequestStates;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 /**
@@ -27,6 +30,7 @@ public class ParticipationRequestDto {
     @Positive
     private Long requester;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime created;
     private RequestStates status;
 }

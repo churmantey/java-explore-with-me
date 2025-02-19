@@ -71,8 +71,8 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (!request.getRequester().getId().equals(userId)) {
             throw new ValidationException("User with id=" + userId + " has no request with id=" + requestId);
         }
-        request.setStatus(RequestStates.REJECTED);
-        return null;
+        request.setStatus(RequestStates.CANCELED);
+        return mapper.toParticipationRequestDto(request);
     }
 
     private void validateNewRequest(User user, Event event) {
@@ -89,15 +89,10 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
             throw new ValidationException("User with id=" + user.getId() + " is an initiator of " +
                     "event with id=" + event.getId());
         }
-        if (!eventHasFreeSpots(event)) {
+        if (!event.hasFreeSpots()) {
             throw new ValidationException("Event with id=" + event.getId() +
                     " is fully booked, no more requests allowed");
         }
-    }
-
-    private boolean eventHasFreeSpots(Event event) {
-        return event.getParticipantLimit() == null || event.getParticipantLimit().equals(0)
-                || event.getConfirmedRequests() < event.getParticipantLimit();
     }
 
 }
