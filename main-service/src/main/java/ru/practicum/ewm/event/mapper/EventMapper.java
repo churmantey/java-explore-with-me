@@ -33,7 +33,6 @@ public interface EventMapper {
 
     List<EventShortDto> toEventShortDtoList(List<Event> eventList);
 
-
     @Mapping(source = "categoryId", target = "category.id")
     @Mapping(source = "location.lat", target = "locationLat")
     @Mapping(source = "location.lon", target = "locationLon")

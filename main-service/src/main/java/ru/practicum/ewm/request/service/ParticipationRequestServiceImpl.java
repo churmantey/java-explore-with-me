@@ -79,7 +79,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (user == null) throw new ValidationException("Null user value received");
         if (event == null) throw new ValidationException("Null event value received");
         if (!event.getState().equals(EventStates.PUBLISHED))
-            throw new NotFoundException("Event with id=" + event.getId() + " is not available");
+            throw new ValidationException("Event with id=" + event.getId() + " is not available");
         // проверка повторного запроса на участие
         if (requestRepository.existsByRequester_IdAndEvent_Id(user.getId(), event.getId())) {
             throw new ValidationException("User with id=" + user.getId() + " already has a request for " +

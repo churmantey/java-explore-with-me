@@ -7,6 +7,7 @@ import ru.practicum.ewm.category.Category;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.mapper.CategoryMapper;
 import ru.practicum.ewm.category.repository.CategoryRepository;
+import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 
@@ -17,14 +18,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
 
-    private final CategoryRepository storage;
+    private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
     private final CategoryMapper mapper;
 
     @Override
     @Transactional
     public CategoryDto createCategory(CategoryDto categoryDto) {
-        if (!storage.existsByNameIgnoreCase(categoryDto.getName())) {
-            return mapper.toCategoryDto(storage.save(mapper.toEntity(categoryDto)));
+        if (!categoryRepository.existsByNameIgnoreCase(categoryDto.getName())) {
+            return mapper.toCategoryDto(categoryRepository.save(mapper.toEntity(categoryDto)));
         } else {
             throw new ValidationException("Category " + categoryDto.getName() + " already exists.");
         }
@@ -33,8 +35,8 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
-        if (!storage.existsByNameIgnoreCaseAndIdNot(categoryDto.getName(), categoryId)) {
-            Optional<Category> optCategory = storage.findById(categoryId);
+        if (!categoryRepository.existsByNameIgnoreCaseAndIdNot(categoryDto.getName(), categoryId)) {
+            Optional<Category> optCategory = categoryRepository.findById(categoryId);
             if (optCategory.isPresent()) {
                 Category category = optCategory.get();
                 category.setName(categoryDto.getName());
@@ -50,8 +52,12 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public void deleteCategory(Long categoryId) {
-        if (storage.existsById(categoryId)) {
-            storage.deleteById(categoryId);
+        if (categoryRepository.existsById(categoryId)) {
+            if (eventRepository.existsByCategory_Id(categoryId)) {
+                throw new ValidationException("Category with id=" + categoryId + " has events in it " +
+                        "and can not be deleted");
+            }
+            categoryRepository.deleteById(categoryId);
         } else {
             throw new NotFoundException("Category with id " + categoryId + " not found");
         }
@@ -59,12 +65,12 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public List<CategoryDto> getCategories(int from, int size) {
-        return mapper.toCategoryDtoList(storage.findCategories(from, size));
+        return mapper.toCategoryDtoList(categoryRepository.findCategories(from, size));
     }
 
     @Override
     public CategoryDto getCategory(Long categoryId) {
-        Optional<Category> optCategory = storage.findById(categoryId);
+        Optional<Category> optCategory = categoryRepository.findById(categoryId);
         if (optCategory.isPresent()) {
             return mapper.toCategoryDto(optCategory.get());
         } else {

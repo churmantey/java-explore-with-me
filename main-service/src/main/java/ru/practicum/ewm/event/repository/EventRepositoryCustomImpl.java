@@ -3,6 +3,7 @@ package ru.practicum.ewm.event.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -32,7 +33,7 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 
         conditions.add(cb.equal(event.get("state"), EventStates.PUBLISHED));
         if (text != null && !text.isEmpty()) {
-            String searchPattern = "%" + text + "%";
+            String searchPattern = "%" + text.toLowerCase() + "%";
             conditions.add(cb.or(cb.like(cb.lower(event.get("title")), searchPattern),
                                  cb.like(cb.lower(event.get("annotation")), searchPattern),
                                  cb.like(cb.lower(event.get("description")), searchPattern)));
@@ -62,61 +63,13 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         switch (sortType) {
             case EVENT_DATE -> cq.orderBy(cb.asc(event.get("eventDate")));
             case VIEWS -> cq.orderBy(cb.desc(event.get("views")));
-            default -> cq.orderBy(cb.asc(event.get("id")));
+            case null, default -> cq.orderBy(cb.asc(event.get("id")));
         }
 
         return entityManager.createQuery(cq)
                 .setFirstResult(from)
                 .setMaxResults(size)
                 .getResultList();
-
-
-/*
-        Map<String, Object> queryParameters = new HashMap<>();
-
-        StringBuilder query = new StringBuilder("SELECT * from events e ");
-        query.append(" where e.state = :state ");
-        queryParameters.put("state", EventStates.PUBLISHED);
-        if (text != null && !text.isBlank()) {
-            query.append("""
-                     and (e.title like lower(concat('%', :text,'%'))
-                     or e.annotation like lower(concat('%', :text,'%'))
-                     or e.description like lower(concat('%', :text,'%')))
-                    """);
-            queryParameters.put("text", text);
-        }
-        if (categoryIds != null && !categoryIds.isEmpty()) {
-            query.append("""
-                     and (e.category_id in :categoryIds)
-                    """);
-            queryParameters.put("categoryIds", categoryIds);
-        }
-        if (rangeStart != null) {
-            query.append(" and (e.event_date >= :rangeStart) ");
-            queryParameters.put("rangeStart", rangeStart);
-        }
-        if (rangeEnd != null) {
-            query.append(" and (e.event_date <= :rangeEnd) ");
-            queryParameters.put("rangeEnd", rangeEnd);
-        }
-        if (onlyAvailable != null && onlyAvailable.equals(true)) {
-            query.append(" and (e.event_date <= :rangeEnd) ");
-            queryParameters.put("rangeEnd", rangeEnd);
-        }
-        switch (sortType) {
-            case VIEWS:
-                query.append(" order by e.views DESC ");
-                break;
-            default:
-                query.append(" order by e.event_date ASC ");
-        }
-
-        Query nativeQuery =  entityManager.createNativeQuery(query.toString(), Event.class);
-        for (Map.Entry<String, Object> entry : queryParameters.entrySet()) {
-            nativeQuery.setParameter(entry.getKey(), entry.getValue());
-        }
-        return nativeQuery.getResultList();
-*/
 
     }
 
@@ -155,14 +108,4 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
                 .setMaxResults(size)
                 .getResultList();
     }
-
-
-
-    //    public List<Event> getEventsByFiltersV2(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
-//                                          LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortTypes sortType,
-//                                          int from, int size) {
-//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-//
-//    }
-
 }

@@ -1,8 +1,7 @@
 package ru.practicum.ewm.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.stats.dto.HitDto;
@@ -21,27 +20,29 @@ public class NewEventDto {
     @NotNull
     private Long category;
 
-    @NotNull
-    @Size(max = 120)
+    @NotBlank
+    @Size(min= 3, max = 120)
     private String title;
 
-    @NotNull
-    @Size(max = 2000)
+    @NotBlank
+    @Size(min = 20, max = 2000)
     private String annotation;
 
-    @NotNull
-    @Size(max = 7000)
+    @NotBlank
+    @Size(min = 20, max = 7000)
     private String description;
 
     private LocationDto location;
 
     private boolean paid;
 
+    @PositiveOrZero
     private int participantLimit;
 
     private boolean requestModeration = true;
 
     @NotNull
+    @FutureOrPresent
     @JsonFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
     private LocalDateTime eventDate;
 }

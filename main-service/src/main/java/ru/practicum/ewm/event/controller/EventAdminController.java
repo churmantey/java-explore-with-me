@@ -3,6 +3,7 @@ package ru.practicum.ewm.event.controller;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,16 +28,17 @@ public class EventAdminController {
     private final StatsLogger statsLogger;
 
     @GetMapping
-    public List<EventFullDto> getEventsByFilters(@RequestParam List<Long> users,
-                                                 @RequestParam List<EventStates> states,
-                                                 @RequestParam List<Long> categories,
-                                                 @RequestParam @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
-                                                     LocalDateTime rangeStart,
-                                                 @RequestParam @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
-                                                     LocalDateTime rangeEnd,
-                                                 @RequestParam(name = "from", defaultValue = "0") int from,
-                                                 @RequestParam(name = "size", defaultValue = "10") int size,
-                                                 HttpServletRequest request) {
+    public List<EventFullDto> getEventsByFilters(
+            @RequestParam(name = "users", required = false) List<Long> users,
+            @RequestParam(name = "states", required = false) List<EventStates> states,
+            @RequestParam(name = "categories", required = false) List<Long> categories,
+            @RequestParam(name = "rangeStart", required = false) @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
+                LocalDateTime rangeStart,
+            @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
+                LocalDateTime rangeEnd,
+            @RequestParam(name = "from", defaultValue = "0") int from,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            HttpServletRequest request) {
         log.info("GET admin events , users={}, states={}, categories={}, rangeStart={}, rangeEnd={}, from={}, size={}",
                 users, states, categories, rangeStart, rangeEnd, from, size);
         statsLogger.logIPAndPath(request);
@@ -45,7 +47,7 @@ public class EventAdminController {
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateAdminEvent(@PathVariable("eventId") Long eventId,
-                                         @RequestBody UpdateAdminEventDto adminDto, HttpServletRequest request) {
+                                         @Valid @RequestBody UpdateAdminEventDto adminDto, HttpServletRequest request) {
         log.info("PATCH admin event , adminDto={}", adminDto);
         statsLogger.logIPAndPath(request);
         return eventService.updateAdminEvent(eventId, adminDto);

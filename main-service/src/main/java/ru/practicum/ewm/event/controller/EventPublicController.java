@@ -3,11 +3,13 @@ package ru.practicum.ewm.event.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.service.EventService;
+import ru.practicum.ewm.stats.dto.HitDto;
 import ru.practicum.ewm.statslogger.StatsLogger;
 
 import java.time.LocalDateTime;
@@ -23,16 +25,17 @@ public class EventPublicController {
     private final StatsLogger statsLogger;
 
     @GetMapping
-    public List<EventShortDto> getEventsByFilters(@RequestParam("text") String text,
-                                                  @RequestParam("categories") List<Long> categoryIds,
-                                                  @RequestParam("paid") Boolean paid,
-                                                  @RequestParam("rangeStart") LocalDateTime rangeStart,
-                                                  @RequestParam("rangeEnd") LocalDateTime rangeEnd,
-                                                  @RequestParam("onlyAvailable") Boolean onlyAvailable,
-                                                  @RequestParam("sort") EventSortTypes sortType,
-                                                  @RequestParam(name = "from", defaultValue = "0") int from,
-                                                  @RequestParam(name = "size", defaultValue = "10") int size,
-                                                  HttpServletRequest request) {
+    public List<EventShortDto> getEventsByFilters(
+            @RequestParam(name = "text", required = false) String text,
+            @RequestParam(name = "categories", required = false) List<Long> categoryIds,
+            @RequestParam(name = "paid", required = false) Boolean paid,
+            @RequestParam(name = "rangeStart", required = false) @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN) LocalDateTime rangeStart,
+            @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN) LocalDateTime rangeEnd,
+            @RequestParam(name = "onlyAvailable", required = false) Boolean onlyAvailable,
+            @RequestParam(name = "sort", required = false) EventSortTypes sortType,
+            @RequestParam(name = "from", defaultValue = "0") int from,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+          HttpServletRequest request) {
         log.info("GET events by filters, text={}, categories={}, paid={},\n" +
                  "rangeStart={}, rangeEnd={}, onlyAvailable={}, sort={},\n" +
                  "from={}, size={}",

@@ -13,6 +13,8 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, EventRepositoryCustom {
 
+    boolean existsByCategory_Id(Long id);
+
     List<Event> findByCategory_IdOrderByIdAsc(Long id);
 
     @Query(value = """

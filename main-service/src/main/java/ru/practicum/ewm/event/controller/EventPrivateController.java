@@ -54,7 +54,7 @@ public class EventPrivateController {
     @PatchMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateUserEvent(@PathVariable("userId") Long userId, @PathVariable("eventId") Long eventId,
-                                         @RequestBody UpdateUserEventDto updateUserEventDto,
+                                        @Valid @RequestBody UpdateUserEventDto updateUserEventDto,
                                          HttpServletRequest request) {
         log.info("PATCH user event , userId={}, eventId={}, data={}", userId, eventId, updateUserEventDto);
         statsLogger.logIPAndPath(request);

@@ -27,6 +27,15 @@ public class ErrorHandler {
                 e.getMessage(), LocalDateTime.now());
     }
 
+    @ExceptionHandler(MalformedDataException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMalformedDataException(MalformedDataException e) {
+        log.error("Got 409 status conflicting data {}", e.getMessage(), e);
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.name(), "Malformed data",
+                e.getMessage(), LocalDateTime.now());
+    }
+
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRuntimeException(RuntimeException e) {

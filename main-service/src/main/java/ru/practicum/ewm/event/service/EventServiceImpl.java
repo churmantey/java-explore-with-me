@@ -7,9 +7,11 @@ import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
+import ru.practicum.ewm.event.StateActionAdmin;
 import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.repository.EventRepository;
+import ru.practicum.ewm.exception.MalformedDataException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.request.ParticipationRequest;
@@ -50,14 +52,17 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getEventsByFilters(String text, List<Long> categoryIds, Boolean paid,
                                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                   Boolean onlyAvailable, EventSortTypes sortType, int from, int size) {
-        return mapper.toEventShortDtoList(eventRepository.getEventsByFilters(text, categoryIds, paid, rangeStart,
-                                                                rangeEnd, onlyAvailable, sortType, from, size));
+        validateRangeDates(rangeStart, rangeEnd);
+        List<Event> elist = eventRepository.getEventsByFilters(text, categoryIds, paid, rangeStart,
+                rangeEnd, onlyAvailable, sortType, from, size);
+        return mapper.toEventShortDtoList(elist);
     }
 
     @Override
     public List<EventFullDto> getAdminEventsByFilters(List<Long> users, List<EventStates> states, List<Long> categories,
                                                       LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                       int from, int size) {
+        validateRangeDates(rangeStart, rangeEnd);
         return mapper.toEventFullDto(eventRepository.getAdminEventsByFilters(users, states, categories,
                 rangeStart, rangeEnd, from, size));
     }
@@ -70,6 +75,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getPublishedEventById(Long eventId) {
         Event event = eventRepository.getExistingEvent(eventId);
+        event.addView();
         if (!event.getState().equals(EventStates.PUBLISHED)) {
             throw new NotFoundException("Event with id=" + eventId + " is not published");
         }
@@ -116,6 +122,11 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto updateAdminEvent(Long eventId, UpdateAdminEventDto updateAdminEventDto) {
         Event event = eventRepository.getExistingEvent(eventId);
+        if (updateAdminEventDto.getStateAction() != null
+            && updateAdminEventDto.getStateAction().equals(StateActionAdmin.PUBLISH_EVENT)
+            && event.getState().equals(EventStates.CANCELED)) {
+            throw new ValidationException("Event with id=" + eventId + " is canceled and can not be published");
+        }
         if (event.getState().equals(EventStates.PUBLISHED)) {
             throw new ValidationException("Published events cannot be modified");
         }
@@ -190,6 +201,12 @@ public class EventServiceImpl implements EventService {
                 throw new ValidationException("Unknown request status: " + updateRequest.getStatus());
         }
         return response;
+    }
+
+    private void validateRangeDates(LocalDateTime start, LocalDateTime end) {
+        if (start != null && end != null && end.isBefore(start)){
+            throw new MalformedDataException("Invalid date range: starting date is before ending date");
+        }
     }
 
     private void validateNewEvent(NewEventDto newEventDto) {
