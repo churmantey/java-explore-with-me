@@ -1,6 +1,9 @@
 package ru.practicum.ewm.event.mapper;
 
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
 import ru.practicum.ewm.category.mapper.CategoryMapper;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.dto.*;
@@ -50,28 +53,4 @@ public interface EventMapper {
     @Mapping(source = "locationLon", target = "location.lon")
     @Mapping(target = "stateAction", ignore = true)
     UpdateAdminEventDto toUpdateAdminEventDto(Event event);
-
-//    @AfterMapping
-//    default void setDtoLocations(Event event, @MappingTarget EventFullDto fullDto) {
-//        fullDto.getLocation().setLat(event.getLocationLat());
-//        fullDto.getLocation().setLon(event.getLocationLon());
-//    }
-//
-//    @AfterMapping
-//    default void setEventLocations(@MappingTarget Event event, EventFullDto fullDto) {
-//        if (fullDto.getLocation() != null) {
-//            event.setLocationLat(fullDto.getLocation().getLat());
-//            event.setLocationLon(fullDto.getLocation().getLon());
-//        }
-//    }
-//
-//    @AfterMapping
-//    default void setEventLocations(@MappingTarget Event event, NewEventDto newDto) {
-//        if (newDto.getLocation() != null) {
-//            event.setLocationLat(newDto.getLocation().getLat());
-//            event.setLocationLon(newDto.getLocation().getLon());
-//        }
-//    }
-
-
 }

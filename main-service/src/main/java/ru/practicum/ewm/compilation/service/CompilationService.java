@@ -10,13 +10,13 @@ import java.util.List;
 @Service
 public interface CompilationService {
 
-    List<CompilationDto> getCompilations();
+    List<CompilationDto> getCompilations(Boolean pinned, int from, int size);
 
-    List<CompilationDto> getCompilation(Long compId);
+    CompilationDto getCompilation(Long compId);
 
     CompilationDto createCompilation(NewCompilationDto newCompilationDto);
 
-    CompilationDto deleteCompilation(Long compId);
+    void deleteCompilation(Long compId);
 
     CompilationDto updateCompilation(Long compId, UpdateCompilationRequest updateRequest);
 

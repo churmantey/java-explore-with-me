@@ -125,6 +125,7 @@ public class Event {
     public void addConfirm() {
         this.confirmedRequests++;
     }
+
     public void removeConfirm() {
         this.confirmedRequests--;
     }
@@ -133,7 +134,4 @@ public class Event {
         this.views++;
     }
 
-    public void removeView() {
-        this.views--;
-    }
 }

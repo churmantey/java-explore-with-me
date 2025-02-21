@@ -6,10 +6,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.ewm.request.RequestStates;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 /**

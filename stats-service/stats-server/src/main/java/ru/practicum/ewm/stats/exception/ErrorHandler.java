@@ -1,4 +1,4 @@
-package ru.practicum.ewm.exception;
+package ru.practicum.ewm.stats.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,25 +12,10 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundException(NotFoundException e) {
-        log.error("Got 404 status Not found {}", e.getMessage(), e);
-        return new ErrorResponse(HttpStatus.NOT_FOUND.name(), "Not found", e.getMessage(), LocalDateTime.now());
-    }
-
-    @ExceptionHandler(ValidationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleNotFoundException(ValidationException e) {
-        log.error("Got 409 status conflicting data {}", e.getMessage(), e);
-        return new ErrorResponse(HttpStatus.CONFLICT.name(), "Conflicting data",
-                e.getMessage(), LocalDateTime.now());
-    }
-
     @ExceptionHandler(MalformedDataException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMalformedDataException(MalformedDataException e) {
-        log.error("Got 400 status malformed data {}", e.getMessage(), e);
+        log.error("Got 400 status conflicting data {}", e.getMessage(), e);
         return new ErrorResponse(HttpStatus.BAD_REQUEST.name(), "Malformed data",
                 e.getMessage(), LocalDateTime.now());
     }

@@ -1,7 +1,6 @@
 package ru.practicum.ewm.event.controller;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +32,9 @@ public class EventAdminController {
             @RequestParam(name = "states", required = false) List<EventStates> states,
             @RequestParam(name = "categories", required = false) List<Long> categories,
             @RequestParam(name = "rangeStart", required = false) @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
-                LocalDateTime rangeStart,
+            LocalDateTime rangeStart,
             @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN)
-                LocalDateTime rangeEnd,
+            LocalDateTime rangeEnd,
             @RequestParam(name = "from", defaultValue = "0") int from,
             @RequestParam(name = "size", defaultValue = "10") int size,
             HttpServletRequest request) {

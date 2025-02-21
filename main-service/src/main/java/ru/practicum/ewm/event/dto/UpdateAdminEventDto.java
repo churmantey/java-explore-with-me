@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.ewm.event.StateActionAdmin;
-import ru.practicum.ewm.event.StateActionUser;
 import ru.practicum.ewm.stats.dto.HitDto;
 
 import java.time.LocalDateTime;

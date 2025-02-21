@@ -35,14 +35,15 @@ public class EventPublicController {
             @RequestParam(name = "sort", required = false) EventSortTypes sortType,
             @RequestParam(name = "from", defaultValue = "0") int from,
             @RequestParam(name = "size", defaultValue = "10") int size,
-          HttpServletRequest request) {
-        log.info("GET events by filters, text={}, categories={}, paid={},\n" +
-                 "rangeStart={}, rangeEnd={}, onlyAvailable={}, sort={},\n" +
-                 "from={}, size={}",
-                 text, categoryIds, paid, rangeStart, rangeEnd, onlyAvailable, sortType, from, size);
+            HttpServletRequest request) {
+        log.info("""
+                    GET events by filters, text={}, categories={}, paid={},
+                    rangeStart={}, rangeEnd={}, onlyAvailable={}, sort={},
+                    from={}, size={}""",
+                text, categoryIds, paid, rangeStart, rangeEnd, onlyAvailable, sortType, from, size);
         statsLogger.logIPAndPath(request);
         return eventService.getEventsByFilters(text, categoryIds, paid, rangeStart, rangeEnd,
-                                                onlyAvailable, sortType, from, size);
+                onlyAvailable, sortType, from, size);
     }
 
     @GetMapping("/{eventId}")

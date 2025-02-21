@@ -7,9 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventStates;
-import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.repository.EventRepository;
-import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.request.ParticipationRequest;
 import ru.practicum.ewm.request.RequestStates;
@@ -30,8 +28,6 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final ParticipationRequestMapper mapper;
-
-    private final EventMapper eventMapper;
 
     @Override
     public List<ParticipationRequestDto> getEventRequests(Long eventId) {
@@ -56,7 +52,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         request.setCreated(LocalDateTime.now());
         if (!event.getRequestModeration() || event.getParticipantLimit().equals(0)) {
             request.setStatus(RequestStates.CONFIRMED);
-            event.setConfirmedRequests(event.getConfirmedRequests()+1);
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
         } else {
             request.setStatus(RequestStates.PENDING);
         }

@@ -55,7 +55,7 @@ public class EventPrivateController {
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateUserEvent(@PathVariable("userId") Long userId, @PathVariable("eventId") Long eventId,
                                         @Valid @RequestBody UpdateUserEventDto updateUserEventDto,
-                                         HttpServletRequest request) {
+                                        HttpServletRequest request) {
         log.info("PATCH user event , userId={}, eventId={}, data={}", userId, eventId, updateUserEventDto);
         statsLogger.logIPAndPath(request);
         return eventService.updateUserEvent(userId, eventId, updateUserEventDto);
@@ -75,10 +75,10 @@ public class EventPrivateController {
     //Изменение статуса (подтверждена, отменена) заявок на участие в событии текущего пользователя
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResponse updateRequestStates(
-                                                            @PathVariable("userId") Long userId,
-                                                            @PathVariable("eventId") Long eventId,
-                                                            @RequestBody EventRequestStatusUpdateRequest updateRequest,
-                                                            HttpServletRequest request) {
+            @PathVariable("userId") Long userId,
+            @PathVariable("eventId") Long eventId,
+            @RequestBody EventRequestStatusUpdateRequest updateRequest,
+            HttpServletRequest request) {
         log.info("PATCH requests states, userId={}, eventId={}, updateRequest={}", userId, eventId, updateRequest);
         statsLogger.logIPAndPath(request);
         return eventService.updateRequestStates(userId, eventId, updateRequest);

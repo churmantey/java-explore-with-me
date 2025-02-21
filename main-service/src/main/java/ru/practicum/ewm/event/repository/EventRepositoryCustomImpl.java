@@ -2,8 +2,6 @@ package ru.practicum.ewm.event.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -13,7 +11,9 @@ import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 
@@ -35,13 +35,13 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         if (text != null && !text.isEmpty()) {
             String searchPattern = "%" + text.toLowerCase() + "%";
             conditions.add(cb.or(cb.like(cb.lower(event.get("title")), searchPattern),
-                                 cb.like(cb.lower(event.get("annotation")), searchPattern),
-                                 cb.like(cb.lower(event.get("description")), searchPattern)));
+                    cb.like(cb.lower(event.get("annotation")), searchPattern),
+                    cb.like(cb.lower(event.get("description")), searchPattern)));
         }
         if (categoryIds != null && !categoryIds.isEmpty()) {
             conditions.add(cb.in(event.get("category").get("id")).value(categoryIds));
         }
-        if (paid != null ) {
+        if (paid != null) {
             conditions.add(cb.equal(event.get("paid"), paid));
         }
         if (rangeStart == null && rangeEnd == null) {

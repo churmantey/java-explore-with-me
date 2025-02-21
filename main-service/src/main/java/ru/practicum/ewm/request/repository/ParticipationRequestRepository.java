@@ -1,7 +1,6 @@
 package ru.practicum.ewm.request.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.request.ParticipationRequest;
 

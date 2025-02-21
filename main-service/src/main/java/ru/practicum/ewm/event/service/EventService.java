@@ -1,6 +1,5 @@
 package ru.practicum.ewm.event.service;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.event.dto.*;

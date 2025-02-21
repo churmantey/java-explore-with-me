@@ -9,12 +9,12 @@ import java.util.List;
 
 public interface EventRepositoryCustom {
 
-     List<Event> getEventsByFilters(String text, List<Long> categoryIds, Boolean paid,
-                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                    Boolean onlyAvailable, EventSortTypes sortType, int from, int size);
+    List<Event> getEventsByFilters(String text, List<Long> categoryIds, Boolean paid,
+                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                   Boolean onlyAvailable, EventSortTypes sortType, int from, int size);
 
-     List<Event> getAdminEventsByFilters(List<Long> users, List<EventStates> states, List<Long> categories,
-                                         LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                         int from, int size);
+    List<Event> getAdminEventsByFilters(List<Long> users, List<EventStates> states, List<Long> categories,
+                                        LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                        int from, int size);
 
 }

@@ -32,10 +32,10 @@ public class CompilationAdminController {
 
     @DeleteMapping("/{compId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public CompilationDto createCompilation(@PathVariable Long compId, HttpServletRequest request) {
+    public void deleteCompilation(@PathVariable Long compId, HttpServletRequest request) {
         log.info("DELETE compilation, id={}", compId);
         statsLogger.logIPAndPath(request);
-        return service.deleteCompilation(compId);
+        service.deleteCompilation(compId);
     }
 
     @PatchMapping("/{compId}")

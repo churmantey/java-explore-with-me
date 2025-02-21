@@ -123,8 +123,8 @@ public class EventServiceImpl implements EventService {
     public EventFullDto updateAdminEvent(Long eventId, UpdateAdminEventDto updateAdminEventDto) {
         Event event = eventRepository.getExistingEvent(eventId);
         if (updateAdminEventDto.getStateAction() != null
-            && updateAdminEventDto.getStateAction().equals(StateActionAdmin.PUBLISH_EVENT)
-            && event.getState().equals(EventStates.CANCELED)) {
+                && updateAdminEventDto.getStateAction().equals(StateActionAdmin.PUBLISH_EVENT)
+                && event.getState().equals(EventStates.CANCELED)) {
             throw new ValidationException("Event with id=" + eventId + " is canceled and can not be published");
         }
         if (event.getState().equals(EventStates.PUBLISHED)) {
@@ -204,7 +204,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateRangeDates(LocalDateTime start, LocalDateTime end) {
-        if (start != null && end != null && end.isBefore(start)){
+        if (start != null && end != null && end.isBefore(start)) {
             throw new MalformedDataException("Invalid date range: starting date is before ending date");
         }
     }
@@ -213,7 +213,7 @@ public class EventServiceImpl implements EventService {
         if (newEventDto == null) {
             throw new ValidationException("New event of NULL received");
         } else if (newEventDto.getEventDate() == null
-                    || newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+                || newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw makeEventDateValidationException();
         }
     }
@@ -248,7 +248,7 @@ public class EventServiceImpl implements EventService {
                     break;
                 default:
                     throw new NotFoundException(
-                        "Unknown event state action: " + updateAdminEventDto.getStateAction());
+                            "Unknown event state action: " + updateAdminEventDto.getStateAction());
             }
         }
     }
@@ -256,8 +256,8 @@ public class EventServiceImpl implements EventService {
     private void updateEventFields(Event event, UpdateUserEventDto updateUserEventDto) {
         if (updateUserEventDto.getCategoryId() != null) {
             event.setCategory(categoryRepository.findById(updateUserEventDto.getCategoryId())
-                                .orElseThrow(() -> new ValidationException("Category (id=" +
-                                                    updateUserEventDto.getCategoryId() + ") doesn't exist")));
+                    .orElseThrow(() -> new ValidationException("Category (id=" +
+                            updateUserEventDto.getCategoryId() + ") doesn't exist")));
         }
         if (updateUserEventDto.getEventDate() != null) {
             if (updateUserEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
@@ -297,5 +297,4 @@ public class EventServiceImpl implements EventService {
     private NotFoundException makeUserNotFoundException(Long userId) {
         return new NotFoundException("User with id=" + userId + "not found");
     }
-
 }

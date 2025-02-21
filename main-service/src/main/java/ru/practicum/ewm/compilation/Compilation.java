@@ -23,14 +23,14 @@ public class Compilation {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(name = "compilation_events",
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     private Set<Event> events = new LinkedHashSet<>();
 
     @Column(name = "pinned")
-    private Boolean pinned;
+    private boolean pinned;
 
     @NotBlank
     @Column(name = "title")

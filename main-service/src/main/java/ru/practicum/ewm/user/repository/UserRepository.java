@@ -20,8 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             where u.id in :ids order by u.id offset :from limit :size
             """, nativeQuery = true)
     List<User> findAllByIds(@Param("ids") Collection<Long> ids,
-                                      @Param("from") int from,
-                                      @Param("size") int size);
+                            @Param("from") int from,
+                            @Param("size") int size);
 
     @Query(value = """
             select *

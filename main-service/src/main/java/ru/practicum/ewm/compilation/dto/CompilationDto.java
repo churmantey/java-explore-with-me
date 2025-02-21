@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 import ru.practicum.ewm.event.dto.EventShortDto;
 
 import java.util.Set;
@@ -19,6 +18,6 @@ import java.util.Set;
 public class CompilationDto {
     private Long id;
     private Set<EventShortDto> events;
-    private Boolean pinned;
+    private boolean pinned;
     private String title;
 }

@@ -2,7 +2,9 @@ package ru.practicum.ewm.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.stats.dto.HitDto;
 
@@ -21,7 +23,7 @@ public class NewEventDto {
     private Long category;
 
     @NotBlank
-    @Size(min= 3, max = 120)
+    @Size(min = 3, max = 120)
     private String title;
 
     @NotBlank

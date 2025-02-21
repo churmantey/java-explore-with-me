@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.stats.dto.HitDto;
 import ru.practicum.ewm.stats.dto.StatsDto;
+import ru.practicum.ewm.stats.exception.MalformedDataException;
 import ru.practicum.ewm.stats.mapper.HitMapper;
 import ru.practicum.ewm.stats.mapper.StatsMapper;
 import ru.practicum.ewm.stats.model.Stats;
@@ -29,6 +30,9 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (start == null || end == null || start.isAfter(end)) {
+            throw new MalformedDataException("Starting / ending date are not correct or not specified");
+        }
         List<Stats> result;
         if (uris == null || uris.isEmpty()) {
             if (unique) {

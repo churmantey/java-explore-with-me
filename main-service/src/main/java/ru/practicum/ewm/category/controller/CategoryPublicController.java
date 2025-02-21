@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.service.CategoryService;
 import ru.practicum.ewm.statslogger.StatsLogger;
-import ru.practicum.ewm.user.dto.UserDto;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class CategoryPublicController {
                                            HttpServletRequest request) {
         log.info("GET categories from={}, size={}", from, size);
         statsLogger.logIPAndPath(request);
-        return categoryService.getCategories(from , size);
+        return categoryService.getCategories(from, size);
     }
 
     @GetMapping("/{id}")
