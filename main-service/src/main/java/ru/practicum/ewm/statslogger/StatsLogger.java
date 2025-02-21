@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class StatsLogger {
 
-    private final static String SERVICE_NAME = "ewm-main-service";
+    private static final String SERVICE_NAME = "ewm-main-service";
     private final StatsClient statsClient;
 
     public void logIPAndPath(HttpServletRequest request) {
