@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.dto.EventFullDto;
@@ -25,12 +26,15 @@ public class EventPublicController {
     private final StatsLogger statsLogger;
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getEventsByFilters(
             @RequestParam(name = "text", required = false) String text,
             @RequestParam(name = "categories", required = false) List<Long> categoryIds,
             @RequestParam(name = "paid", required = false) Boolean paid,
-            @RequestParam(name = "rangeStart", required = false) @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN) LocalDateTime rangeStart,
-            @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN) LocalDateTime rangeEnd,
+            @RequestParam(name = "rangeStart", required = false)
+            @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN) LocalDateTime rangeStart,
+            @RequestParam(name = "rangeEnd", required = false)
+            @DateTimeFormat(pattern = HitDto.DATE_FORMAT_PATTERN) LocalDateTime rangeEnd,
             @RequestParam(name = "onlyAvailable", required = false) Boolean onlyAvailable,
             @RequestParam(name = "sort", required = false) EventSortTypes sortType,
             @RequestParam(name = "from", defaultValue = "0") int from,
@@ -47,10 +51,10 @@ public class EventPublicController {
     }
 
     @GetMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
     public EventFullDto getEventById(@PathVariable("eventId") Long eventId, HttpServletRequest request) {
         log.info("GET event id={}", eventId);
         statsLogger.logIPAndPath(request);
         return eventService.getPublishedEventById(eventId);
     }
-
 }

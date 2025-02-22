@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -29,15 +30,15 @@ public class EventFullDto {
     @NotNull
     private UserShortDto initiator;
 
-    @NotNull
+    @NotBlank
     @Size(max = 120)
     private String title;
 
-    @NotNull
+    @NotBlank
     @Size(min = 20, max = 2000)
     private String annotation;
 
-    @NotNull
+    @NotBlank
     @Size(max = 7000)
     private String description;
 

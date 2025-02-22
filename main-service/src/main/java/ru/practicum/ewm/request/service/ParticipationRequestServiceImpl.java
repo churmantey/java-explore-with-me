@@ -1,10 +1,8 @@
 package ru.practicum.ewm.request.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.event.repository.EventRepository;
@@ -31,17 +29,16 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     public List<ParticipationRequestDto> getEventRequests(Long eventId) {
-        return mapper.toParticipationRequestDto(requestRepository.findByEvent_IdOrderByIdAsc(eventId));
+        return mapper.toParticipationRequestDto(requestRepository.findByEventIdOrderByIdAsc(eventId));
     }
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
-        return mapper.toParticipationRequestDto(requestRepository.findByRequester_IdOrderByIdAsc(userId));
+        return mapper.toParticipationRequestDto(requestRepository.findByRequesterIdOrderByIdAsc(userId));
     }
 
     @Override
     @Transactional
-    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         User requestor = userRepository.getExistingUser(userId);
         Event event = eventRepository.getExistingEvent(eventId);
@@ -77,7 +74,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         if (!event.getState().equals(EventStates.PUBLISHED))
             throw new ValidationException("Event with id=" + event.getId() + " is not available");
         // проверка повторного запроса на участие
-        if (requestRepository.existsByRequester_IdAndEvent_Id(user.getId(), event.getId())) {
+        if (requestRepository.existsByRequesterIdAndEventId(user.getId(), event.getId())) {
             throw new ValidationException("User with id=" + user.getId() + " already has a request for " +
                     "event with id=" + event.getId());
         }

@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -37,17 +38,17 @@ public class Event {
     private User initiator;
 
     @Size(max = 120)
-    @NotNull
+    @NotBlank
     @Column(name = "title")
     private String title;
 
     @Size(max = 2000)
-    @NotNull
+    @NotBlank
     @Column(name = "annotation")
     private String annotation;
 
     @Size(max = 7000)
-    @NotNull
+    @NotBlank
     @Column(name = "description")
     private String description;
 
@@ -89,6 +90,28 @@ public class Event {
     @Column(name = "views")
     private long views;
 
+    public boolean hasFreeSpots() {
+        return this.getParticipantLimit() == null || this.getParticipantLimit().equals(0)
+                || this.getConfirmedRequests() < this.getParticipantLimit();
+
+    }
+
+    public void addConfirm() {
+        this.confirmedRequests++;
+    }
+
+    public void removeConfirm() {
+        this.confirmedRequests--;
+    }
+
+    public void addView() {
+        this.views++;
+    }
+
+    public boolean isPublished() {
+        return (this.getState() != null && this.getState().equals(EventStates.PUBLISHED));
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
@@ -115,23 +138,4 @@ public class Event {
                 .hashCode()
                 : getClass().hashCode();
     }
-
-    public boolean hasFreeSpots() {
-        return this.getParticipantLimit() == null || this.getParticipantLimit().equals(0)
-                || this.getConfirmedRequests() < this.getParticipantLimit();
-
-    }
-
-    public void addConfirm() {
-        this.confirmedRequests++;
-    }
-
-    public void removeConfirm() {
-        this.confirmedRequests--;
-    }
-
-    public void addView() {
-        this.views++;
-    }
-
 }

@@ -3,6 +3,7 @@ package ru.practicum.ewm.category.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.service.CategoryService;
@@ -20,6 +21,7 @@ public class CategoryPublicController {
     private final StatsLogger statsLogger;
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<CategoryDto> getCategories(@RequestParam(name = "from", defaultValue = "0") int from,
                                            @RequestParam(name = "size", defaultValue = "10") int size,
                                            HttpServletRequest request) {
@@ -29,6 +31,7 @@ public class CategoryPublicController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public CategoryDto getCategory(@PathVariable("id") Long categoryId, HttpServletRequest request) {
         log.info("GET category id={}", categoryId);
         statsLogger.logIPAndPath(request);

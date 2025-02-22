@@ -12,7 +12,6 @@ import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,14 +35,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
         if (!categoryRepository.existsByNameIgnoreCaseAndIdNot(categoryDto.getName(), categoryId)) {
-            Optional<Category> optCategory = categoryRepository.findById(categoryId);
-            if (optCategory.isPresent()) {
-                Category category = optCategory.get();
-                category.setName(categoryDto.getName());
-                return mapper.toCategoryDto(category);
-            } else {
-                throw new NotFoundException("Category with id " + categoryId + " not found");
-            }
+            Category category = categoryRepository.getExistingCategory(categoryId);
+            category.setName(categoryDto.getName());
+            return mapper.toCategoryDto(category);
         } else {
             throw new ValidationException("Category " + categoryDto.getName() + " already exists.");
         }
@@ -53,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void deleteCategory(Long categoryId) {
         if (categoryRepository.existsById(categoryId)) {
-            if (eventRepository.existsByCategory_Id(categoryId)) {
+            if (eventRepository.existsByCategoryId(categoryId)) {
                 throw new ValidationException("Category with id=" + categoryId + " has events in it " +
                         "and can not be deleted");
             }
@@ -70,11 +64,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto getCategory(Long categoryId) {
-        Optional<Category> optCategory = categoryRepository.findById(categoryId);
-        if (optCategory.isPresent()) {
-            return mapper.toCategoryDto(optCategory.get());
-        } else {
-            throw new NotFoundException("Category with id " + categoryId + " not found");
-        }
+        return mapper.toCategoryDto(categoryRepository.getExistingCategory(categoryId));
     }
 }

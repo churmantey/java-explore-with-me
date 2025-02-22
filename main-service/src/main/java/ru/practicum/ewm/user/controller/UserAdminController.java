@@ -30,6 +30,7 @@ public class UserAdminController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<UserDto> getUsers(@RequestParam(name = "ids", defaultValue = "") List<Long> ids,
                                   @RequestParam(name = "from", defaultValue = "0") int from,
                                   @RequestParam(name = "size", defaultValue = "10") int size,
@@ -50,5 +51,4 @@ public class UserAdminController {
         statsLogger.logIPAndPath(request);
         userService.deleteUserById(userId);
     }
-
 }

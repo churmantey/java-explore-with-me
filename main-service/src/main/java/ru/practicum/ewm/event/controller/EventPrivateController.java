@@ -63,6 +63,7 @@ public class EventPrivateController {
 
     //Получение информации о запросах на участие в событии текущего пользователя
     @GetMapping("/{eventId}/requests")
+    @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getUserEventRequests(@PathVariable("userId") Long userId,
                                                               @PathVariable("eventId") Long eventId,
                                                               HttpServletRequest request) {
@@ -74,14 +75,13 @@ public class EventPrivateController {
     //PATCH /users/{userId}/events/{eventId}/requests
     //Изменение статуса (подтверждена, отменена) заявок на участие в событии текущего пользователя
     @PatchMapping("/{eventId}/requests")
-    public EventRequestStatusUpdateResponse updateRequestStates(
-            @PathVariable("userId") Long userId,
-            @PathVariable("eventId") Long eventId,
-            @RequestBody EventRequestStatusUpdateRequest updateRequest,
-            HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.OK)
+    public EventRequestStatusUpdateResponse updateRequestStates(@PathVariable("userId") Long userId,
+                                                                @PathVariable("eventId") Long eventId,
+                                                            @RequestBody EventRequestStatusUpdateRequest updateRequest,
+                                                            HttpServletRequest request) {
         log.info("PATCH requests states, userId={}, eventId={}, updateRequest={}", userId, eventId, updateRequest);
         statsLogger.logIPAndPath(request);
         return eventService.updateRequestStates(userId, eventId, updateRequest);
     }
-
 }

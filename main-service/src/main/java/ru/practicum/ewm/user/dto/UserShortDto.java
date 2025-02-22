@@ -10,6 +10,6 @@ import ru.practicum.ewm.user.User;
 @Data
 @AllArgsConstructor
 public class UserShortDto {
-    private final Long id;
-    private final String name;
+    private Long id;
+    private String name;
 }

@@ -13,9 +13,9 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, EventRepositoryCustom {
 
-    boolean existsByCategory_Id(Long id);
+    boolean existsByCategoryId(Long id);
 
-    List<Event> findByCategory_IdOrderByIdAsc(Long id);
+    List<Event> findByCategoryIdOrderByIdAsc(Long id);
 
     @Query(value = """
             select *
@@ -23,9 +23,9 @@ public interface EventRepository extends JpaRepository<Event, Long>, EventReposi
             where initiator_id=:userId
             order by e.id offset :from limit :size
             """, nativeQuery = true)
-    List<Event> findByInitiator_IdOrderByIdAsc(@Param("userId") Long id,
-                                               @Param("from") int from,
-                                               @Param("size") int size);
+    List<Event> findByInitiatorIdOrderByIdAsc(@Param("userId") Long id,
+                                              @Param("from") int from,
+                                              @Param("size") int size);
 
     default Event getExistingEvent(Long eventId) {
         Optional<Event> optEvent = findById(eventId);

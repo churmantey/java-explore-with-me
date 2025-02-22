@@ -11,8 +11,7 @@ import ru.practicum.ewm.event.mapper.EventMapper;
 
 import java.util.List;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {EventMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {EventMapper.class})
 public interface CompilationMapper {
 
     Compilation toEntity(CompilationDto compilationDto);

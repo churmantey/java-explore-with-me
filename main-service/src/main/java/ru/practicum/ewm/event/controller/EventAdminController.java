@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.EventStates;
 import ru.practicum.ewm.event.dto.EventFullDto;
@@ -27,6 +28,7 @@ public class EventAdminController {
     private final StatsLogger statsLogger;
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<EventFullDto> getEventsByFilters(
             @RequestParam(name = "users", required = false) List<Long> users,
             @RequestParam(name = "states", required = false) List<EventStates> states,
@@ -45,11 +47,11 @@ public class EventAdminController {
     }
 
     @PatchMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateAdminEvent(@PathVariable("eventId") Long eventId,
                                          @Valid @RequestBody UpdateAdminEventDto adminDto, HttpServletRequest request) {
         log.info("PATCH admin event , adminDto={}", adminDto);
         statsLogger.logIPAndPath(request);
         return eventService.updateAdminEvent(eventId, adminDto);
     }
-
 }

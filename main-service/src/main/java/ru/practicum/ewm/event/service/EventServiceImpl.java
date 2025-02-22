@@ -76,7 +76,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getPublishedEventById(Long eventId) {
         Event event = eventRepository.getExistingEvent(eventId);
         event.addView();
-        if (!event.getState().equals(EventStates.PUBLISHED)) {
+        if (!event.isPublished()) {
             throw new NotFoundException("Event with id=" + eventId + " is not published");
         }
         return mapper.toEventFullDto(event);
@@ -85,7 +85,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> getUserEvents(Long userId, int from, int size) {
         if (userRepository.existsById(userId)) {
-            return mapper.toEventShortDtoList(eventRepository.findByInitiator_IdOrderByIdAsc(userId, from, size));
+            return mapper.toEventShortDtoList(eventRepository.findByInitiatorIdOrderByIdAsc(userId, from, size));
         } else {
             throw makeUserNotFoundException(userId);
         }
@@ -108,7 +108,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto updateUserEvent(Long userId, Long eventId, UpdateUserEventDto updateUserEventDto) {
         Event event = eventRepository.getExistingEvent(eventId);
-        if (event.getState().equals(EventStates.PUBLISHED)) {
+        if (event.isPublished()) {
             throw new ValidationException("Published events cannot be modified");
         }
         if (!event.getInitiator().getId().equals(userId)) {
@@ -127,7 +127,7 @@ public class EventServiceImpl implements EventService {
                 && event.getState().equals(EventStates.CANCELED)) {
             throw new ValidationException("Event with id=" + eventId + " is canceled and can not be published");
         }
-        if (event.getState().equals(EventStates.PUBLISHED)) {
+        if (event.isPublished()) {
             throw new ValidationException("Published events cannot be modified");
         }
         updateAdminEventFields(event, updateAdminEventDto);
@@ -144,7 +144,7 @@ public class EventServiceImpl implements EventService {
             throw makeUserHasNoEventValidationException(userId, eventId);
         }
         return requestMapper.toParticipationRequestDto(
-                requestRepository.findByEvent_IdOrderByIdAsc(eventId));
+                requestRepository.findByEventIdOrderByIdAsc(eventId));
     }
 
     @Override
@@ -228,9 +228,12 @@ public class EventServiceImpl implements EventService {
             event.setEventDate(updateAdminEventDto.getEventDate());
         }
 
-        if (updateAdminEventDto.getTitle() != null) event.setTitle(updateAdminEventDto.getTitle());
-        if (updateAdminEventDto.getAnnotation() != null) event.setAnnotation(updateAdminEventDto.getAnnotation());
-        if (updateAdminEventDto.getDescription() != null) event.setDescription(updateAdminEventDto.getDescription());
+        if (updateAdminEventDto.getTitle() != null && !updateAdminEventDto.getTitle().isBlank())
+            event.setTitle(updateAdminEventDto.getTitle());
+        if (updateAdminEventDto.getAnnotation() != null && !updateAdminEventDto.getAnnotation().isBlank())
+            event.setAnnotation(updateAdminEventDto.getAnnotation());
+        if (updateAdminEventDto.getDescription() != null && !updateAdminEventDto.getDescription().isBlank())
+            event.setDescription(updateAdminEventDto.getDescription());
         if (updateAdminEventDto.getPaid() != null) event.setPaid(updateAdminEventDto.getPaid());
         if (updateAdminEventDto.getParticipantLimit() != null) event.setParticipantLimit(
                 updateAdminEventDto.getParticipantLimit());
@@ -266,9 +269,12 @@ public class EventServiceImpl implements EventService {
             event.setEventDate(updateUserEventDto.getEventDate());
         }
 
-        if (updateUserEventDto.getTitle() != null) event.setTitle(updateUserEventDto.getTitle());
-        if (updateUserEventDto.getAnnotation() != null) event.setAnnotation(updateUserEventDto.getAnnotation());
-        if (updateUserEventDto.getDescription() != null) event.setDescription(updateUserEventDto.getDescription());
+        if (updateUserEventDto.getTitle() != null && !updateUserEventDto.getTitle().isBlank())
+            event.setTitle(updateUserEventDto.getTitle());
+        if (updateUserEventDto.getAnnotation() != null && !updateUserEventDto.getAnnotation().isBlank())
+            event.setAnnotation(updateUserEventDto.getAnnotation());
+        if (updateUserEventDto.getDescription() != null && !updateUserEventDto.getDescription().isBlank())
+            event.setDescription(updateUserEventDto.getDescription());
         if (updateUserEventDto.getPaid() != null) event.setPaid(updateUserEventDto.getPaid());
         if (updateUserEventDto.getParticipantLimit() != null) event.setParticipantLimit(
                 updateUserEventDto.getParticipantLimit());
@@ -288,10 +294,6 @@ public class EventServiceImpl implements EventService {
 
     private ValidationException makeEventDateValidationException() {
         return new ValidationException("Event should start in not less than 2 hours");
-    }
-
-    private NotFoundException makeEventNotFoundException(Long eventId) {
-        return new NotFoundException("Event with id=" + eventId + " not found");
     }
 
     private NotFoundException makeUserNotFoundException(Long userId) {

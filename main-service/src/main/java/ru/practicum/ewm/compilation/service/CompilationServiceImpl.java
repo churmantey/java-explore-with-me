@@ -1,10 +1,8 @@
 package ru.practicum.ewm.compilation.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.practicum.ewm.compilation.Compilation;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
 import ru.practicum.ewm.compilation.dto.NewCompilationDto;
@@ -42,7 +40,6 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
         if (compilationRepository.existsByTitleIgnoreCase(newCompilationDto.getTitle())) {
             throw new ValidationException("Compilation with title already exists: " + newCompilationDto.getTitle());
@@ -54,7 +51,6 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(Long compId) {
         if (compilationRepository.existsById(compId)) {
             compilationRepository.deleteById(compId);
@@ -68,7 +64,7 @@ public class CompilationServiceImpl implements CompilationService {
         if (updateRequest.getPinned() != null) {
             comp.setPinned(updateRequest.getPinned());
         }
-        if (updateRequest.getTitle() != null) {
+        if (updateRequest.getTitle() != null && !updateRequest.getTitle().isBlank()) {
             comp.setTitle(updateRequest.getTitle());
         }
         if (updateRequest.getEvents() != null) {

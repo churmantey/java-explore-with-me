@@ -13,9 +13,9 @@ import ru.practicum.ewm.category.Category;
 @AllArgsConstructor
 public class CategoryDto {
 
-    private final Long id;
+    private  Long id;
 
     @NotBlank
     @Length(min = 1, max = 50)
-    private final String name;
+    private  String name;
 }
