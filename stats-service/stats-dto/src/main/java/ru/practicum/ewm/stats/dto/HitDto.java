@@ -24,7 +24,7 @@ public class HitDto {
     private String uri;
 
     @NotBlank
-    @Pattern(regexp = "(\\d{1,3}\\.){3}\\d{1,3}", message = "Incorrect ip address")
+    @Pattern(regexp = "((\\d{1,3}\\.){3}\\d{1,3})|(([0-9a-f]{1,4}:){7}[0-9a-f]{1,4})", message = "Incorrect ip address")
     private String ip;
 
     @PastOrPresent

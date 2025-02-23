@@ -2,7 +2,6 @@ package ru.practicum.ewm.stats.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,7 +31,6 @@ public class Hit {
     private String uri;
 
     @NotBlank
-    @Pattern(regexp = "(\\d{1,3}\\.){3}\\d{1,3}", message = "Incorrect ip address")
     @Column(name = "ip")
     private String ip;
 
