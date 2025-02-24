@@ -45,7 +45,7 @@ public class LocationAdminController {
     public void deleteLocation(@PathVariable("locId") Long locId, HttpServletRequest request) {
         log.info("DELETE location id={}", locId);
         statsLogger.logIPAndPath(request);
-        return locationService.deleteLocation(locId);
+        locationService.deleteLocation(locId);
     }
 
 
