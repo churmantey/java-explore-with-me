@@ -3,6 +3,7 @@ package ru.practicum.ewm.location.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.ewm.location.LocationState;
 
 /**
  * DTO for {@link ru.practicum.ewm.location.Location}
@@ -15,4 +16,6 @@ public class LocationDto {
     private String description;
     private Float latitude;
     private Float longitude;
+    private Long id;
+    private LocationState state;
 }

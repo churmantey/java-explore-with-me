@@ -34,6 +34,10 @@ public class Location {
     @Column(name = "longitude")
     private Float longitude;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state")
+    private LocationState state;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
