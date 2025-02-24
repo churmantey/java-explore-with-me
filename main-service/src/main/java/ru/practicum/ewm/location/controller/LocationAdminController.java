@@ -4,7 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.location.LocationState;
 import ru.practicum.ewm.location.dto.LocationDto;
 import ru.practicum.ewm.location.dto.NewLocationDto;
 import ru.practicum.ewm.location.dto.UpdateLocationDto;
@@ -23,6 +25,7 @@ public class LocationAdminController {
     private final StatsLogger statsLogger;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public LocationDto createLocation(@Valid @RequestBody NewLocationDto newLocationDto, HttpServletRequest request) {
         log.info("POST new location {}", newLocationDto);
         statsLogger.logIPAndPath(request);
@@ -37,13 +40,23 @@ public class LocationAdminController {
         return locationService.updateLocation(locId, updateLocationDto);
     }
 
+    @DeleteMapping("/{locId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLocation(@PathVariable("locId") Long locId, HttpServletRequest request) {
+        log.info("DELETE location id={}", locId);
+        statsLogger.logIPAndPath(request);
+        return locationService.deleteLocation(locId);
+    }
+
+
     @GetMapping
-    public List<LocationDto> getAdminLocationsByFilters(@RequestParam(defaultValue = "0") int from,
+    public List<LocationDto> getAdminLocationsByFilters(@RequestParam(required = false) LocationState state,
+                                                        @RequestParam(defaultValue = "0") int from,
                                                         @RequestParam(defaultValue = "10") int size,
                                                         HttpServletRequest request) {
-        log.info("GET admin locations from={}, size={}", from, size);
+        log.info("GET admin locations state={}, from={}, size={}", state, from, size);
         statsLogger.logIPAndPath(request);
-        return locationService.getAdminLocationsByFilters(from, size);
+        return locationService.getAdminLocationsByFilters(state, from, size);
 
     }
 
