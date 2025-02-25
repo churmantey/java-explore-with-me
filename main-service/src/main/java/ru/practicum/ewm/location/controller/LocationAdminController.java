@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/admin/location")
+@RequestMapping("/admin/locations")
 @RequiredArgsConstructor
 public class LocationAdminController {
 
@@ -33,6 +33,7 @@ public class LocationAdminController {
     }
 
     @PatchMapping("/{locId}")
+    @ResponseStatus(HttpStatus.OK)
     public LocationDto updateLocation(@PathVariable("locId") Long locId,
                                       @RequestBody UpdateLocationDto updateLocationDto, HttpServletRequest request) {
         log.info("PATCH location id={}, data={}", locId, updateLocationDto);
@@ -50,6 +51,7 @@ public class LocationAdminController {
 
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<LocationDto> getAdminLocationsByFilters(@RequestParam(required = false) LocationState state,
                                                         @RequestParam(defaultValue = "0") int from,
                                                         @RequestParam(defaultValue = "10") int size,
@@ -59,7 +61,5 @@ public class LocationAdminController {
         return locationService.getAdminLocationsByFilters(state, from, size);
 
     }
-
-
 }
 

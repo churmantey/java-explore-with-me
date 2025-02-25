@@ -31,5 +31,4 @@ public interface EventRepository extends JpaRepository<Event, Long>, EventReposi
         Optional<Event> optEvent = findById(eventId);
         return optEvent.orElseThrow(() -> new NotFoundException("Event not found, id=" + eventId));
     }
-
 }

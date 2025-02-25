@@ -2,14 +2,17 @@ package ru.practicum.ewm.location.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
 /**
  * DTO for {@link ru.practicum.ewm.location.Location}
  */
-@Getter
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class NewLocationDto {
     @NotBlank
     @Size(min = 3, max = 50)

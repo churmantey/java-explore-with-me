@@ -5,6 +5,7 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.dto.LocationDto;
+import ru.practicum.ewm.location.dto.NewLocationDto;
 import ru.practicum.ewm.location.dto.UpdateLocationDto;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public interface LocationMapper {
     LocationDto toLocationDto(Location location);
 
     List<LocationDto> toLocationDto(List<Location> location);
+
+    Location toEntity(NewLocationDto newLocationDto);
 
     Location toEntity(UpdateLocationDto updateLocationDto);
 

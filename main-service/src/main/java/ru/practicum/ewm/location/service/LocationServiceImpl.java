@@ -4,6 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.event.dto.EventFullDto;
+import ru.practicum.ewm.event.dto.EventLocDto;
+import ru.practicum.ewm.event.mapper.EventMapper;
+import ru.practicum.ewm.event.repository.EventRepository;
+import ru.practicum.ewm.exception.NotFoundException;
+import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.LocationState;
 import ru.practicum.ewm.location.dto.LocationDto;
 import ru.practicum.ewm.location.dto.NewLocationDto;
@@ -18,11 +23,15 @@ import java.util.List;
 public class LocationServiceImpl implements LocationService {
 
     private final LocationRepository locationRepository;
+    private final EventRepository eventRepository;
     private final LocationMapper mapper;
+    private final EventMapper eventMapper;
 
     @Override
     public LocationDto createLocation(NewLocationDto newLocationDto) {
-        return null;
+        Location location  = mapper.toEntity(newLocationDto);
+        location.setState(LocationState.HIDDEN);
+        return mapper.toLocationDto(locationRepository.save(location));
     }
 
     @Override
@@ -32,25 +41,37 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public void deleteLocation(Long locId) {
+        if (locationRepository.existsById(locId)) {
+            locationRepository.deleteById(locId);
+        } else {
+            throw new NotFoundException("Location with id=" + locId + " not found");
+        }
     }
 
     @Override
     public List<LocationDto> getAdminLocationsByFilters(LocationState state, int from, int size) {
-        return List.of();
+        if (state == null) {
+            return mapper.toLocationDto(locationRepository.findPortion(from, size));
+        } else {
+            return mapper.toLocationDto(locationRepository.findPortionByState(state, from, size));
+        }
     }
 
     @Override
     public List<LocationDto> getVisibleLocations() {
-        return List.of();
+        return mapper.toLocationDto(locationRepository.findByState(LocationState.VISIBLE));
     }
 
     @Override
     public LocationDto getVisibleLocationById(Long locId) {
-        return null;
+        return mapper.toLocationDto(locationRepository.findByIdAndState(locId, LocationState.VISIBLE)
+                .orElseThrow(() -> new NotFoundException("No location found, id=" + locId)));
     }
 
     @Override
-    public List<EventFullDto> getLocationEvents(Long locId, Integer distance) {
-        return List.of();
+    public List<EventLocDto> getLocationEvents(Long locId, Integer distance, int from, int size) {
+        Location location = locationRepository.getExistingLocation(locId);
+        return eventRepository.findEventsAroundLocation(
+                location.getLatitude(), location.getLongitude(), distance, from, size);
     }
 }
