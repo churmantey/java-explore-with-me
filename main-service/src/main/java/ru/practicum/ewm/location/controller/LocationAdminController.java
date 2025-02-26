@@ -35,7 +35,7 @@ public class LocationAdminController {
     @PatchMapping("/{locId}")
     @ResponseStatus(HttpStatus.OK)
     public LocationDto updateLocation(@PathVariable("locId") Long locId,
-                                      @RequestBody UpdateLocationDto updateLocationDto, HttpServletRequest request) {
+                                      @Valid @RequestBody UpdateLocationDto updateLocationDto, HttpServletRequest request) {
         log.info("PATCH location id={}, data={}", locId, updateLocationDto);
         statsLogger.logIPAndPath(request);
         return locationService.updateLocation(locId, updateLocationDto);
@@ -49,6 +49,13 @@ public class LocationAdminController {
         locationService.deleteLocation(locId);
     }
 
+    @GetMapping("/{locId}")
+    @ResponseStatus(HttpStatus.OK)
+    public LocationDto getLocationById(@PathVariable Long locId, HttpServletRequest request) {
+        log.info("GET admin location by id={}", locId);
+        statsLogger.logIPAndPath(request);
+        return locationService.getLocationById(locId);
+    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -59,7 +66,6 @@ public class LocationAdminController {
         log.info("GET admin locations state={}, from={}, size={}", state, from, size);
         statsLogger.logIPAndPath(request);
         return locationService.getAdminLocationsByFilters(state, from, size);
-
     }
 }
 

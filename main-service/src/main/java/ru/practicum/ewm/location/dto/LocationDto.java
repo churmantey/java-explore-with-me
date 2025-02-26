@@ -12,10 +12,10 @@ import ru.practicum.ewm.location.LocationState;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocationDto {
+    private Long id;
     private String title;
     private String description;
     private Float latitude;
     private Float longitude;
-    private Long id;
     private LocationState state;
 }

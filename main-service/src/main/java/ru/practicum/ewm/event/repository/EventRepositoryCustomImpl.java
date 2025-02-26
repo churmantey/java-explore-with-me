@@ -1,12 +1,11 @@
 package ru.practicum.ewm.event.repository;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
@@ -111,38 +110,19 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
                 .getResultList();
     }
 
-    //    @Query(value = """
-//        select new ru.practicum.ewm.event.dto.EventLocDto(e.id, e.title, e.annotation,
-//                 distance(:lat, :lon, e.location_lat, e.location_lon))
-//        from Event e
-//        where distance(:lat, :lon, e.location_lat, e.location_lon) <= :dist
-//        order by distance(:lat, :lon, e.location_lat, e.location_lon) ASC
-//        offset :from FETCH FIRST :size ROWS ONLY
-//        """)
-
-//    @Query(value = """
-//            select e.id, e.title, e.annotation, distance(:lat, :lon, e.location_lat, e.location_lon) as distance
-//            from events e
-//            where distance(:lat, :lon, e.location_lat, e.location_lon) <= :dist
-//            order by distance(:lat, :lon, e.location_lat, e.location_lon) ASC
-//            offset :from limit :size
-//            """, nativeQuery = true)
-//    public List<EventLocDto> findEventsAroundLocation(@Param("lat") Float latitude, @Param("lon") Float longitude,
-//                                                      @Param("dist") Integer distance,
-//                                                      @Param("from") int from,
-//                                                      @Param("size") int size) {
-    public List<EventLocDto> findEventsAroundLocation( Float latitude, Float longitude,
-                 Integer distance, int from, int size) {
+    public List<EventLocDto> findEventsAroundLocation(Float latitude, Float longitude,
+                                                      Integer distance, int from, int size) {
 
         String queryText = """
-            select e.id, e.title, e.annotation, distance(:lat, :lon, e.location_lat, e.location_lon) as distance
-            from events e
-            where distance(:lat, :lon, e.location_lat, e.location_lon) <= :dist
-            order by distance(:lat, :lon, e.location_lat, e.location_lon) ASC
-            offset :from limit :size
-            """;
+                select e.id, e.title, e.annotation, distance(:lat, :lon, e.location_lat, e.location_lon) as distance
+                from events e
+                where e.state=:state and distance(:lat, :lon, e.location_lat, e.location_lon) <= :dist
+                order by distance(:lat, :lon, e.location_lat, e.location_lon) ASC
+                offset :from limit :size
+                """;
 
         List<EventLocDto> ls = entityManager.createNativeQuery(queryText, EventLocDto.class)
+                .setParameter("state", EventStates.PUBLISHED)
                 .setParameter("lat", latitude)
                 .setParameter("lon", longitude)
                 .setParameter("dist", distance)

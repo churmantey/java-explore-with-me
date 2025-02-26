@@ -1,11 +1,8 @@
 package ru.practicum.ewm.location.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.Value;
 import org.hibernate.validator.constraints.Range;
 import ru.practicum.ewm.location.LocationState;
 

@@ -1,7 +1,5 @@
 package ru.practicum.ewm.location.service;
 
-import jakarta.validation.Valid;
-import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventLocDto;
 import ru.practicum.ewm.location.LocationState;
 import ru.practicum.ewm.location.dto.LocationDto;
@@ -20,6 +18,8 @@ public interface LocationService {
     List<LocationDto> getVisibleLocations();
 
     LocationDto getVisibleLocationById(Long locId);
+
+    LocationDto getLocationById(Long locId);
 
     List<EventLocDto> getLocationEvents(Long locId, Integer distance, int from, int size);
 
