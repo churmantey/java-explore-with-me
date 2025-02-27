@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "d6a58131-9c08-48e0-86ec-643eb42fc178",
+		"_postman_id": "a2176c03-5a4d-408e-8c0d-9eb8d71dc9f6",
 		"name": "Test Explore with me - locations processing",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "37881915"
+		"_exporter_id": "38904736"
 	},
 	"item": [
 		{
@@ -1116,7 +1116,7 @@
 			"name": "Public",
 			"item": [
 				{
-					"name": "Получение событий вблизи места",
+					"name": "Получение места",
 					"event": [
 						{
 							"listen": "test",
@@ -1124,6 +1124,27 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const location1 = pm.collectionVariables.get('location1');",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Место должно содержать поля: id, title, description, latitude, longitude\", function () {",
+									"    pm.expect(target).to.have.property('id');",
+									"    pm.expect(target).to.have.property('title');",
+									"    pm.expect(target).to.have.property('description');",
+									"    pm.expect(target).to.have.property('latitude');",
+									"    pm.expect(target).to.have.property('longitude');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(location1.title).equal(target.title, 'Название места пользователя должно соответствовать отправленному в запросе');",
+									"    pm.expect(location1.description).equal(target.description, 'Описание места должно соответствовать отправленному в запросе');",
+									"    pm.expect(location1.latitude).equal(target.latitude, 'Широта должна соответствовать отправленной в запросе');",
+									"    pm.expect(location1.longitude).equal(target.longitude, 'Долгота должна соответствовать отправленной в запросе');",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1134,7 +1155,34 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									""
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        location1 = await api.makeLocationVisible(location1.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set(\"locId\", location1.id);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -1145,19 +1193,393 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/locations/1/events?distance=30",
+							"raw": "{{baseUrl}}/locations/{{locId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"locations",
-								"1",
+								"{{locId}}"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Получение списка доступных мест",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Должен вернуться список объектов\", function () {",
+									"    pm.expect(target).to.be.an(\"array\");",
+									"});",
+									"",
+									"const loc1 = pm.collectionVariables.get('location1');",
+									"const loc2 = pm.collectionVariables.get('location2');",
+									"const loc3 = pm.collectionVariables.get('location3');",
+									"let foundLoc1;",
+									"let foundLoc2;",
+									"let hasHidden = false;",
+									"target.forEach(function (element) {",
+									"    if (element.id == loc1.id) foundLoc1 = element;",
+									"    if (element.id == loc2.id) foundLoc2 = element;",
+									"    if (element.id == loc3.id) hasHidden = true;",
+									"});",
+									"",
+									"pm.test(\"Должны отсутстсвовать скрытые места\", function () {",
+									"    pm.expect(hasHidden).equal(false);",
+									"});",
+									"",
+									"pm.test(\"Места должны содержать поля: id, title, description, latitude, longitude\", function () {",
+									"    pm.expect(target[0]).to.have.property('id');",
+									"    pm.expect(target[0]).to.have.property('title');",
+									"    pm.expect(target[0]).to.have.property('description');",
+									"    pm.expect(target[0]).to.have.property('latitude');",
+									"    pm.expect(target[0]).to.have.property('longitude');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать ранее добавленным данным\", function () {",
+									"    pm.expect(loc1.id).equal(foundLoc1.id, 'Идентификатор места должен соответствовать идентификатору ранее добавленного места');",
+									"    pm.expect(loc1.title).equal(foundLoc1.title, 'Название места должно соответствовать наименованию ранее добавленного места');",
+									"    pm.expect(loc1.latitude).equal(foundLoc1.latitude, 'Широта должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc1.longitude).equal(foundLoc1.longitude, 'Долгота должна соответстсвовать ранее добавленной');",
+									"",
+									"    pm.expect(loc2.id).equal(foundLoc2.id, 'Идентификатор места должен соответствовать идентификатору ранее добавленного места');",
+									"    pm.expect(loc2.title).equal(foundLoc2.title, 'Название места должно соответствовать наименованию ранее добавленного места');",
+									"    pm.expect(loc2.latitude).equal(foundLoc2.latitude, 'Широта должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc2.longitude).equal(foundLoc2.longitude, 'Долгота должна соответстсвовать ранее добавленной');",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        let location2 = await api.addLocation(rnd.getLocation());\r",
+									"        let location3 = await api.addLocation(rnd.getLocation());\r",
+									"        location1 = await api.makeLocationVisible(location1.id);\r",
+									"        location2 = await api.makeLocationVisible(location2.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set('location2', location2);\r",
+									"        pm.collectionVariables.set('location3', location3);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/locations?size=100",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "100"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Получение событий вблизи места",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Должен вернуться список объектов\", function () {",
+									"    pm.expect(target).to.be.an(\"array\");",
+									"});",
+									"",
+									"const loc1 = pm.collectionVariables.get('location1');",
+									"",
+									"const event1 = pm.collectionVariables.get('event1');",
+									"const event2 = pm.collectionVariables.get('event2');",
+									"const event3 = pm.collectionVariables.get('event3');",
+									"",
+									"let foundEvent1;",
+									"let foundEvent2;",
+									"let foundEvent3;",
+									"target.forEach(function (element) {",
+									"    if (element.id == event1.id) foundEvent1 = element;",
+									"    if (element.id == event2.id) foundEvent2 = element;",
+									"    if (element.id == event3.id) foundEvent3 = element;",
+									"});",
+									"",
+									"pm.test(\"Должны отсутстсвовать места не попадающие в радиус\", function () {",
+									"    pm.expect(foundEvent3).to.be.undefined;",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        location1 = await api.makeLocationVisible(location1.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set(\"locId\", location1.id);\r",
+									"\r",
+									"        const user = await api.addUser(rnd.getUser());\r",
+									"        const category = await api.addCategory(rnd.getCategory());\r",
+									"\r",
+									"        // событие в радиусе 30 км\r",
+									"        let event1 = rnd.getEvent(category.id);\r",
+									"        event1.location.lat = location1.latitude+0.1;\r",
+									"        event1.location.lon = location1.longitude-0.1;\r",
+									"\r",
+									"        // событие в точке самого места\r",
+									"        let event2 = rnd.getEvent(category.id);\r",
+									"        event2.location.lat = location1.latitude;\r",
+									"        event2.location.lon = location1.longitude;\r",
+									"\r",
+									"        // событие дальше 30 км\r",
+									"        let event3 = rnd.getEvent(category.id);\r",
+									"        event3.location.lat = location1.latitude+10;\r",
+									"        event3.location.lon = location1.longitude-10;\r",
+									"\r",
+									"        event1 = await api.addEvent(user.id, event1);\r",
+									"        event1 = await api.publishEvent(event1.id);\r",
+									"        event2 = await api.addEvent(user.id, event2);\r",
+									"        event2 = await api.publishEvent(event2.id);\r",
+									"        event3 = await api.addEvent(user.id, event3);\r",
+									"        event3 = await api.publishEvent(event3.id);\r",
+									"        pm.collectionVariables.set('event1', event1);\r",
+									"        pm.collectionVariables.set('event2', event2);\r",
+									"        pm.collectionVariables.set('event3', event3);\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/locations/{{locId}}/events?distance=30",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations",
+								"{{locId}}",
 								"events"
 							],
 							"query": [
 								{
 									"key": "distance",
 									"value": "30"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Получение событий вблизи места с ограничением количества",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"const event2 = pm.collectionVariables.get('event2');",
+									"",
+									"pm.test(\"Должен вернуться список только с одним событием\", function () {",
+									"    pm.expect(target).to.be.an(\"array\");",
+									"    pm.expect(target[0].id).to.be.equal(event2.id);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        location1 = await api.makeLocationVisible(location1.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set(\"locId\", location1.id);\r",
+									"\r",
+									"        const user = await api.addUser(rnd.getUser());\r",
+									"        const category = await api.addCategory(rnd.getCategory());\r",
+									"\r",
+									"        // событие в радиусе 30 км\r",
+									"        let event1 = rnd.getEvent(category.id);\r",
+									"        event1.location.lat = location1.latitude+0.1;\r",
+									"        event1.location.lon = location1.longitude-0.1;\r",
+									"\r",
+									"        // событие в точке самого места\r",
+									"        let event2 = rnd.getEvent(category.id);\r",
+									"        event2.location.lat = location1.latitude;\r",
+									"        event2.location.lon = location1.longitude;\r",
+									"\r",
+									"        // событие дальше 30 км\r",
+									"        let event3 = rnd.getEvent(category.id);\r",
+									"        event3.location.lat = location1.latitude+10;\r",
+									"        event3.location.lon = location1.longitude-10;\r",
+									"\r",
+									"        event1 = await api.addEvent(user.id, event1);\r",
+									"        event1 = await api.publishEvent(event1.id);\r",
+									"        event2 = await api.addEvent(user.id, event2);\r",
+									"        event2 = await api.publishEvent(event2.id);\r",
+									"        event3 = await api.addEvent(user.id, event3);\r",
+									"        event3 = await api.publishEvent(event3.id);\r",
+									"        pm.collectionVariables.set('event1', event1);\r",
+									"        pm.collectionVariables.set('event2', event2);\r",
+									"        pm.collectionVariables.set('event3', event3);\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/locations/{{locId}}/events?distance=30&size=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations",
+								"{{locId}}",
+								"events"
+							],
+							"query": [
+								{
+									"key": "distance",
+									"value": "30"
+								},
+								{
+									"key": "size",
+									"value": "1"
 								}
 							]
 						},
@@ -1410,6 +1832,22 @@
 		},
 		{
 			"key": "location2",
+			"value": ""
+		},
+		{
+			"key": "location3",
+			"value": ""
+		},
+		{
+			"key": "event1",
+			"value": ""
+		},
+		{
+			"key": "event2",
+			"value": ""
+		},
+		{
+			"key": "event3",
 			"value": ""
 		}
 	]
