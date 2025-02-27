@@ -1,0 +1,1854 @@
+{
+	"info": {
+		"_postman_id": "a2176c03-5a4d-408e-8c0d-9eb8d71dc9f6",
+		"name": "Test Explore with me - locations processing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38904736"
+	},
+	"item": [
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Добавление нового места",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Место должно содержать поля: id, title, description, latitude, longitude\", function () {",
+									"pm.expect(target).to.have.property('id');",
+									"pm.expect(target).to.have.property('title');",
+									"pm.expect(target).to.have.property('description');",
+									"pm.expect(target).to.have.property('latitude');",
+									"pm.expect(target).to.have.property('longitude');",
+									"pm.expect(target).to.have.property('state');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(source.title).equal(target.title, 'Название места пользователя должно соответствовать отправленному в запросе');",
+									"    pm.expect(source.description).equal(target.description, 'Описание места должно соответствовать отправленному в запросе');",
+									"    pm.expect(source.latitude).equal(target.latitude, 'Широта должна соответствовать отправленной в запросе');",
+									"    pm.expect(source.longitude).equal(target.longitude, 'Долгота должна соответствовать отправленной в запросе');",
+									"    pm.expect(target.state).equal('HIDDEN', 'статус по умолчанию должен быть HIDDEN');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let location;\r",
+									"    try {\r",
+									"        location = rnd.getLocation();\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(location),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление нового места без описания",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Место должно содержать поля: id, title, description, latitude, longitude\", function () {",
+									"pm.expect(target).to.have.property('id');",
+									"pm.expect(target).to.have.property('title');",
+									"pm.expect(target).to.have.property('description');",
+									"pm.expect(target).to.have.property('latitude');",
+									"pm.expect(target).to.have.property('longitude');",
+									"pm.expect(target).to.have.property('state');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(source.title).equal(target.title, 'Название места пользователя должно соответствовать отправленному в запросе');",
+									"    pm.expect(source.latitude).equal(target.latitude, 'Широта должна соответствовать отправленной в запросе');",
+									"    pm.expect(source.longitude).equal(target.longitude, 'Долгота должна соответствовать отправленной в запросе');",
+									"    pm.expect(target.state).equal('HIDDEN', 'статус по умолчанию должен быть HIDDEN');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let location;\r",
+									"    try {\r",
+									"        location = rnd.getLocation();\r",
+									"        delete location['description'];\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(location),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление нового места без названия",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(400);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let location;\r",
+									"    try {\r",
+									"        location = rnd.getLocation();\r",
+									"        delete location['title'];\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(location),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление нового места без координат",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(400);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let location;\r",
+									"    try {\r",
+									"        location = rnd.getLocation();\r",
+									"        delete location['latitude'];\r",
+									"        delete location['longitude'];\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(location),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение данных созданного места",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = pm.collectionVariables.get('response');",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Место должно содержать поля: id, title, description, latitude, longitude\", function () {",
+									"    pm.expect(target).to.have.property('id');",
+									"    pm.expect(target).to.have.property('title');",
+									"    pm.expect(target).to.have.property('description');",
+									"    pm.expect(target).to.have.property('latitude');",
+									"    pm.expect(target).to.have.property('longitude');",
+									"    pm.expect(target).to.have.property('state');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(source.title).to.equal(target.title, 'Название места пользователя должно соответствовать отправленному в запросе');",
+									"    pm.expect(source.description).to.equal(target.description, 'Описание места должно соответствовать отправленному в запросе');",
+									"    pm.expect(source.latitude).to.equal(target.latitude, 'Широта должна соответствовать отправленной в запросе');",
+									"    pm.expect(source.longitude).to.equal(target.longitude, 'Долгота должна соответствовать отправленной в запросе');",
+									"    pm.expect(target.state).to.equal('VISIBLE', 'Cтатус должен стать VISIBLE');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        let location = await api.addLocation(rnd.getLocation());\r",
+									"        let foundLoc = await api.findLocation(location.id);\r",
+									"        pm.collectionVariables.set(\"locId\", foundLoc.id);\r",
+									"        pm.collectionVariables.set(\"response\", foundLoc);\r",
+									"        foundLoc.state = \"VISIBLE\";\r",
+									"        pm.request.body.update({\r",
+									"            mode: 'raw',\r",
+									"            raw: foundLoc,\r",
+									"            options: { raw: { language: 'json' } }\r",
+									"        });\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations/{{locId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations",
+								"{{locId}}"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение данных созданного места со слишком коротким названием",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(400);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const location = await api.addLocation(rnd.getLocation());\r",
+									"        const foundLoc = await api.findLocation(location.id);\r",
+									"        pm.collectionVariables.set(\"locId\", location.id);\r",
+									"        pm.collectionVariables.set(\"response\", foundLoc);\r",
+									"        pm.collectionVariables.set(\"locId\", foundLoc.id);\r",
+									"        foundLoc.title = pm.variables.replaceIn('{{$randomLoremSentence}}').slice(0,2);\r",
+									"        foundLoc.state = \"VISIBLE\";\r",
+									"        pm.request.body.update({\r",
+									"            mode: 'raw',\r",
+									"            raw: foundLoc,\r",
+									"            options: { raw: { language: 'json' } }\r",
+									"        });\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations/{{locId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations",
+								"{{locId}}"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение данных созданного места со слишком длинным названием",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(400);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const location = await api.addLocation(rnd.getLocation());\r",
+									"        const foundLoc = await api.findLocation(location.id);\r",
+									"        pm.collectionVariables.set(\"locId\", location.id);\r",
+									"        pm.collectionVariables.set(\"response\", foundLoc);\r",
+									"        pm.collectionVariables.set(\"locId\", foundLoc.id);\r",
+									"        foundLoc.title = pm.variables.replaceIn('{{$randomLoremParagraph}}').slice(0,51);\r",
+									"        foundLoc.state = \"VISIBLE\";\r",
+									"        pm.request.body.update({\r",
+									"            mode: 'raw',\r",
+									"            raw: foundLoc,\r",
+									"            options: { raw: { language: 'json' } }\r",
+									"        });\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations/{{locId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations",
+								"{{locId}}"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "Получение списка всех мест",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Должен вернуться список объектов\", function () {",
+									"    pm.expect(target).to.be.an(\"array\");",
+									"});",
+									"",
+									"const loc1 = pm.collectionVariables.get('location1');",
+									"const loc2 = pm.collectionVariables.get('location2');",
+									"let foundLoc1;",
+									"let foundLoc2;",
+									"target.forEach(function (element) {",
+									"    if (element.id == loc1.id) foundLoc1 = element;",
+									"    if (element.id == loc2.id) foundLoc2 = element;",
+									"});",
+									"",
+									"pm.test(\"Места должны содержать поля: id, title, description, latitude, longitude, state\", function () {",
+									"    pm.expect(target[0]).to.have.property('id');",
+									"    pm.expect(target[0]).to.have.property('title');",
+									"    pm.expect(target[0]).to.have.property('description');",
+									"    pm.expect(target[0]).to.have.property('latitude');",
+									"    pm.expect(target[0]).to.have.property('longitude');",
+									"    pm.expect(target[0]).to.have.property('state');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать ранее добавленным данным\", function () {",
+									"    pm.expect(loc1.id).equal(foundLoc1.id, 'Идентификатор места должен соответствовать идентификатору ранее добавленного места');",
+									"    pm.expect(loc1.title).equal(foundLoc1.title, 'Название места должно соответствовать наименованию ранее добавленного места');",
+									"    pm.expect(loc1.latitude).equal(foundLoc1.latitude, 'Широта должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc1.longitude).equal(foundLoc1.longitude, 'Долгота должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc1.state).equal('HIDDEN', 'Статус должен быть HIDDEN');",
+									"",
+									"",
+									"    pm.expect(loc2.id).equal(foundLoc2.id, 'Идентификатор места должен соответствовать идентификатору ранее добавленного места');",
+									"    pm.expect(loc2.title).equal(foundLoc2.title, 'Название места должно соответствовать наименованию ранее добавленного места');",
+									"    pm.expect(loc2.latitude).equal(foundLoc2.latitude, 'Широта должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc2.longitude).equal(foundLoc2.longitude, 'Долгота должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc2.state).equal('VISIBLE', 'Статус должен быть VISIBLE');",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        let location2 = await api.addLocation(rnd.getLocation());\r",
+									"        location2 = await api.makeLocationVisible(location2.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set('location2', location2);\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations?size=200",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "200"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Получение списка мест по статусу",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Должен вернуться список объектов\", function () {",
+									"    pm.expect(target).to.be.an(\"array\");",
+									"});",
+									"",
+									"const loc1 = pm.collectionVariables.get('location1');",
+									"const loc2 = pm.collectionVariables.get('location2');",
+									"let foundLoc1;",
+									"let foundLoc2;",
+									"let hasHidden = false",
+									"target.forEach(function (element) {",
+									"    if (element.id == loc1.id) foundLoc1 = element;",
+									"    if (element.id == loc2.id) foundLoc2 = element;",
+									"    if (element.state != 'VISIBLE') hasHidden = true;",
+									"});",
+									"",
+									"pm.test(\"Все места должны иметь статус VISIBLE\", function () {",
+									"    pm.expect(hasHidden).equal(false);",
+									"});",
+									"",
+									"pm.test(\"Места должны содержать поля: id, title, description, latitude, longitude, state\", function () {",
+									"    pm.expect(target[0]).to.have.property('id');",
+									"    pm.expect(target[0]).to.have.property('title');",
+									"    pm.expect(target[0]).to.have.property('description');",
+									"    pm.expect(target[0]).to.have.property('latitude');",
+									"    pm.expect(target[0]).to.have.property('longitude');",
+									"    pm.expect(target[0]).to.have.property('state');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать ранее добавленным данным\", function () {",
+									"    pm.expect(loc1.id).equal(foundLoc1.id, 'Идентификатор места должен соответствовать идентификатору ранее добавленного места');",
+									"    pm.expect(loc1.title).equal(foundLoc1.title, 'Название места должно соответствовать наименованию ранее добавленного места');",
+									"    pm.expect(loc1.latitude).equal(foundLoc1.latitude, 'Широта должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc1.longitude).equal(foundLoc1.longitude, 'Долгота должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc1.state).equal('VISIBLE', 'Статус должен быть VISIBLE');",
+									"",
+									"    pm.expect(loc2.id).equal(foundLoc2.id, 'Идентификатор места должен соответствовать идентификатору ранее добавленного места');",
+									"    pm.expect(loc2.title).equal(foundLoc2.title, 'Название места должно соответствовать наименованию ранее добавленного места');",
+									"    pm.expect(loc2.latitude).equal(foundLoc2.latitude, 'Широта должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc2.longitude).equal(foundLoc2.longitude, 'Долгота должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc2.state).equal('VISIBLE', 'Статус должен быть VISIBLE');",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        let location2 = await api.addLocation(rnd.getLocation());\r",
+									"        location1 = await api.makeLocationVisible(location1.id);\r",
+									"        location2 = await api.makeLocationVisible(location2.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set('location2', location2);\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations?state=VISIBLE&size=100",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations"
+							],
+							"query": [
+								{
+									"key": "state",
+									"value": "VISIBLE"
+								},
+								{
+									"key": "size",
+									"value": "100"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление места",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let compilation;\r",
+									"    try {\r",
+									"        const location = await api.addLocation(rnd.getLocation());\r",
+									"        const foundLoc = await api.findLocation(location.id);\r",
+									"        pm.collectionVariables.set(\"locId\", location.id);\r",
+									"        pm.collectionVariables.set(\"response\", foundLoc)\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"const source = pm.collectionVariables.get('response');\r",
+									"const locId = pm.collectionVariables.get('locId');\r",
+									"\r",
+									"let body\r",
+									"const req = {\r",
+									"                url: \"http://localhost:8080/admin/locations/\" + pm.collectionVariables.get('locId'),\r",
+									"                method: \"GET\",\r",
+									"                body: body == null ? \"\" : JSON.stringify(body),\r",
+									"                header: { \"Content-Type\": \"application/json\" },\r",
+									"            };\r",
+									"pm.sendRequest(req, (error, response) => {\r",
+									"    pm.test(\"Место должно быть удалено после выполнения запроса\", function(){\r",
+									"        pm.expect(response).to.have.status(404);\r",
+									"    });\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/locations/{{locId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"locations",
+								"{{locId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Public",
+			"item": [
+				{
+					"name": "Получение места",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const location1 = pm.collectionVariables.get('location1');",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Место должно содержать поля: id, title, description, latitude, longitude\", function () {",
+									"    pm.expect(target).to.have.property('id');",
+									"    pm.expect(target).to.have.property('title');",
+									"    pm.expect(target).to.have.property('description');",
+									"    pm.expect(target).to.have.property('latitude');",
+									"    pm.expect(target).to.have.property('longitude');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(location1.title).equal(target.title, 'Название места пользователя должно соответствовать отправленному в запросе');",
+									"    pm.expect(location1.description).equal(target.description, 'Описание места должно соответствовать отправленному в запросе');",
+									"    pm.expect(location1.latitude).equal(target.latitude, 'Широта должна соответствовать отправленной в запросе');",
+									"    pm.expect(location1.longitude).equal(target.longitude, 'Долгота должна соответствовать отправленной в запросе');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        location1 = await api.makeLocationVisible(location1.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set(\"locId\", location1.id);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/locations/{{locId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations",
+								"{{locId}}"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Получение списка доступных мест",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Должен вернуться список объектов\", function () {",
+									"    pm.expect(target).to.be.an(\"array\");",
+									"});",
+									"",
+									"const loc1 = pm.collectionVariables.get('location1');",
+									"const loc2 = pm.collectionVariables.get('location2');",
+									"const loc3 = pm.collectionVariables.get('location3');",
+									"let foundLoc1;",
+									"let foundLoc2;",
+									"let hasHidden = false;",
+									"target.forEach(function (element) {",
+									"    if (element.id == loc1.id) foundLoc1 = element;",
+									"    if (element.id == loc2.id) foundLoc2 = element;",
+									"    if (element.id == loc3.id) hasHidden = true;",
+									"});",
+									"",
+									"pm.test(\"Должны отсутстсвовать скрытые места\", function () {",
+									"    pm.expect(hasHidden).equal(false);",
+									"});",
+									"",
+									"pm.test(\"Места должны содержать поля: id, title, description, latitude, longitude\", function () {",
+									"    pm.expect(target[0]).to.have.property('id');",
+									"    pm.expect(target[0]).to.have.property('title');",
+									"    pm.expect(target[0]).to.have.property('description');",
+									"    pm.expect(target[0]).to.have.property('latitude');",
+									"    pm.expect(target[0]).to.have.property('longitude');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать ранее добавленным данным\", function () {",
+									"    pm.expect(loc1.id).equal(foundLoc1.id, 'Идентификатор места должен соответствовать идентификатору ранее добавленного места');",
+									"    pm.expect(loc1.title).equal(foundLoc1.title, 'Название места должно соответствовать наименованию ранее добавленного места');",
+									"    pm.expect(loc1.latitude).equal(foundLoc1.latitude, 'Широта должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc1.longitude).equal(foundLoc1.longitude, 'Долгота должна соответстсвовать ранее добавленной');",
+									"",
+									"    pm.expect(loc2.id).equal(foundLoc2.id, 'Идентификатор места должен соответствовать идентификатору ранее добавленного места');",
+									"    pm.expect(loc2.title).equal(foundLoc2.title, 'Название места должно соответствовать наименованию ранее добавленного места');",
+									"    pm.expect(loc2.latitude).equal(foundLoc2.latitude, 'Широта должна соответстсвовать ранее добавленной');",
+									"    pm.expect(loc2.longitude).equal(foundLoc2.longitude, 'Долгота должна соответстсвовать ранее добавленной');",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        let location2 = await api.addLocation(rnd.getLocation());\r",
+									"        let location3 = await api.addLocation(rnd.getLocation());\r",
+									"        location1 = await api.makeLocationVisible(location1.id);\r",
+									"        location2 = await api.makeLocationVisible(location2.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set('location2', location2);\r",
+									"        pm.collectionVariables.set('location3', location3);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/locations?size=100",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "100"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Получение событий вблизи места",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"",
+									"pm.test(\"Должен вернуться список объектов\", function () {",
+									"    pm.expect(target).to.be.an(\"array\");",
+									"});",
+									"",
+									"const loc1 = pm.collectionVariables.get('location1');",
+									"",
+									"const event1 = pm.collectionVariables.get('event1');",
+									"const event2 = pm.collectionVariables.get('event2');",
+									"const event3 = pm.collectionVariables.get('event3');",
+									"",
+									"let foundEvent1;",
+									"let foundEvent2;",
+									"let foundEvent3;",
+									"target.forEach(function (element) {",
+									"    if (element.id == event1.id) foundEvent1 = element;",
+									"    if (element.id == event2.id) foundEvent2 = element;",
+									"    if (element.id == event3.id) foundEvent3 = element;",
+									"});",
+									"",
+									"pm.test(\"Должны отсутстсвовать места не попадающие в радиус\", function () {",
+									"    pm.expect(foundEvent3).to.be.undefined;",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        location1 = await api.makeLocationVisible(location1.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set(\"locId\", location1.id);\r",
+									"\r",
+									"        const user = await api.addUser(rnd.getUser());\r",
+									"        const category = await api.addCategory(rnd.getCategory());\r",
+									"\r",
+									"        // событие в радиусе 30 км\r",
+									"        let event1 = rnd.getEvent(category.id);\r",
+									"        event1.location.lat = location1.latitude+0.1;\r",
+									"        event1.location.lon = location1.longitude-0.1;\r",
+									"\r",
+									"        // событие в точке самого места\r",
+									"        let event2 = rnd.getEvent(category.id);\r",
+									"        event2.location.lat = location1.latitude;\r",
+									"        event2.location.lon = location1.longitude;\r",
+									"\r",
+									"        // событие дальше 30 км\r",
+									"        let event3 = rnd.getEvent(category.id);\r",
+									"        event3.location.lat = location1.latitude+10;\r",
+									"        event3.location.lon = location1.longitude-10;\r",
+									"\r",
+									"        event1 = await api.addEvent(user.id, event1);\r",
+									"        event1 = await api.publishEvent(event1.id);\r",
+									"        event2 = await api.addEvent(user.id, event2);\r",
+									"        event2 = await api.publishEvent(event2.id);\r",
+									"        event3 = await api.addEvent(user.id, event3);\r",
+									"        event3 = await api.publishEvent(event3.id);\r",
+									"        pm.collectionVariables.set('event1', event1);\r",
+									"        pm.collectionVariables.set('event2', event2);\r",
+									"        pm.collectionVariables.set('event3', event3);\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/locations/{{locId}}/events?distance=30",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations",
+								"{{locId}}",
+								"events"
+							],
+							"query": [
+								{
+									"key": "distance",
+									"value": "30"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Получение событий вблизи места с ограничением количества",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"const event2 = pm.collectionVariables.get('event2');",
+									"",
+									"pm.test(\"Должен вернуться список только с одним событием\", function () {",
+									"    pm.expect(target).to.be.an(\"array\");",
+									"    pm.expect(target[0].id).to.be.equal(event2.id);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"\r",
+									"        let location1 = await api.addLocation(rnd.getLocation());\r",
+									"        location1 = await api.makeLocationVisible(location1.id);\r",
+									"        pm.collectionVariables.set('location1', location1);\r",
+									"        pm.collectionVariables.set(\"locId\", location1.id);\r",
+									"\r",
+									"        const user = await api.addUser(rnd.getUser());\r",
+									"        const category = await api.addCategory(rnd.getCategory());\r",
+									"\r",
+									"        // событие в радиусе 30 км\r",
+									"        let event1 = rnd.getEvent(category.id);\r",
+									"        event1.location.lat = location1.latitude+0.1;\r",
+									"        event1.location.lon = location1.longitude-0.1;\r",
+									"\r",
+									"        // событие в точке самого места\r",
+									"        let event2 = rnd.getEvent(category.id);\r",
+									"        event2.location.lat = location1.latitude;\r",
+									"        event2.location.lon = location1.longitude;\r",
+									"\r",
+									"        // событие дальше 30 км\r",
+									"        let event3 = rnd.getEvent(category.id);\r",
+									"        event3.location.lat = location1.latitude+10;\r",
+									"        event3.location.lon = location1.longitude-10;\r",
+									"\r",
+									"        event1 = await api.addEvent(user.id, event1);\r",
+									"        event1 = await api.publishEvent(event1.id);\r",
+									"        event2 = await api.addEvent(user.id, event2);\r",
+									"        event2 = await api.publishEvent(event2.id);\r",
+									"        event3 = await api.addEvent(user.id, event3);\r",
+									"        event3 = await api.publishEvent(event3.id);\r",
+									"        pm.collectionVariables.set('event1', event1);\r",
+									"        pm.collectionVariables.set('event2', event2);\r",
+									"        pm.collectionVariables.set('event3', event3);\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/locations/{{locId}}/events?distance=30&size=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"locations",
+								"{{locId}}",
+								"events"
+							],
+							"query": [
+								{
+									"key": "distance",
+									"value": "30"
+								},
+								{
+									"key": "size",
+									"value": "1"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"API = class {\r",
+					"    constructor(postman, verbose = false, baseUrl = \"http://localhost:8080\") {\r",
+					"        this.baseUrl = baseUrl;\r",
+					"        this.pm = postman;\r",
+					"        this._verbose = verbose;\r",
+					"    }\r",
+					"\r",
+					"    async addLocation(location, verbose=null) {\r",
+					"        return this.post(\"/admin/locations\", location, \"Ошибка при добавлении нового места: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addUser(user, verbose=null) {\r",
+					"        return this.post(\"/admin/users\", user, \"Ошибка при добавлении нового пользователя: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addCategory(category, verbose=null) {\r",
+					"        return this.post(\"/admin/categories\", category, \"Ошибка при добавлении новой категории: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addEvent(userId, event, verbose=null) {\r",
+					"        return this.post(\"/users/\" + userId + \"/events\", event, \"Ошибка при добавлении нового события: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addCompilation(compilation, verbose=null) {\r",
+					"        return this.post(\"/admin/compilations\", compilation, \"Ошибка при добавлении новой подборки: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async makeLocationVisible(locId, verbose=null) {\r",
+					"        return this.patch('/admin/locations/' + locId, {state: \"VISIBLE\"}, \"Ошибка при публикации события\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async publishParticipationRequest(eventId, userId, verbose=null) {\r",
+					"        return this.post('/users/' + userId + '/requests?eventId=' + eventId, null, \"Ошибка при добавлении нового запроса на участие в событии\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async publishEvent(eventId, verbose=null) {\r",
+					"        return this.patch('/admin/events/' + eventId, {stateAction: \"PUBLISH_EVENT\"}, \"Ошибка при публикации события\", verbose);\r",
+					"    }\r",
+					"    \r",
+					"    async rejectEvent(eventId, verbose=null) {\r",
+					"        return this.patch('/admin/events/' + eventId, {stateAction: \"REJECT_EVENT\"}, \"Ошибка при отмене события\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async acceptParticipationRequest(eventId, userId, reqId, verbose=null) {\r",
+					"        return this.patch('/users/' + userId + '/events/' + eventId + '/requests', {requestIds:[reqId], status: \"CONFIRMED\"}, \"Ошибка при принятии заявки на участие в событии\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findLocation(locId, verbose=null) {\r",
+					"        return this.get('/admin/locations/' + locId, null, \"Ошибка при поиске места по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findCategory(catId, verbose=null) {\r",
+					"        return this.get('/categories/' + catId, null, \"Ошибка при поиске категории по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findCompilation(compId, verbose=null) {\r",
+					"        return this.get('/compilations/' + compId, null, \"Ошибка при поиске подборки по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findEvent(eventId, verbose=null) {\r",
+					"        return this.get('/events/' + eventId, null, \"Ошибка при поиске события по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findUser(userId, verbose=null) {\r",
+					"        return this.get('/admin/users?ids=' + userId, null, \"Ошибка при поиске пользователя по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async post(path, body, errorText = \"Ошибка при выполнении post-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"POST\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"\r",
+					"    async patch(path, body = null, errorText = \"Ошибка при выполнении patch-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"PATCH\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"\r",
+					"    async get(path, body = null, errorText = \"Ошибка при выполнении get-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"GET\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"    async sendRequest(method, path, body=null, errorText = \"Ошибка при выполнении запроса: \", verbose=null) {\r",
+					"        return new Promise((resolve, reject) => {\r",
+					"            verbose = verbose == null ? this._verbose : verbose;\r",
+					"            const request = {\r",
+					"                url: this.baseUrl + path,\r",
+					"                method: method,\r",
+					"                body: body == null ? \"\" : JSON.stringify(body),\r",
+					"                header: { \"Content-Type\": \"application/json\" },\r",
+					"            };\r",
+					"            if(verbose) {\r",
+					"                console.log(\"Отправляю запрос: \", request);\r",
+					"            }\r",
+					"\r",
+					"            try {\r",
+					"                this.pm.sendRequest(request, (error, response) => {\r",
+					"                    if(error || (response.code >= 400 && response.code <= 599)) {\r",
+					"                        let err = error ? error : JSON.stringify(response.json());\r",
+					"                        console.error(\"При выполнении запроса к серверу возникла ошика.\\n\", err,\r",
+					"                             \"\\nДля отладки проблемы повторите такой же запрос к вашей программе \" + \r",
+					"                             \"на локальном компьютере. Данные запроса:\\n\", JSON.stringify(request));\r",
+					"\r",
+					"                        reject(new Error(errorText + err));\r",
+					"                    }\r",
+					"                    if(verbose) {\r",
+					"                        console.log(\"Результат обработки запроса: код состояния - \", response.code, \", тело: \", response.json());\r",
+					"                    }\r",
+					"                    if (response.stream.length === 0){\r",
+					"                        reject(new Error('Отправлено пустое тело ответа'))\r",
+					"                    }else{\r",
+					"                        resolve(response.json());\r",
+					"                    }\r",
+					"                });\r",
+					"                \r",
+					"            } catch(err) {\r",
+					"                if(verbose) {\r",
+					"                    console.error(errorText, err);\r",
+					"                }\r",
+					"                return Promise.reject(err);\r",
+					"            }\r",
+					"        });\r",
+					"    }\r",
+					"};\r",
+					"\r",
+					"RandomUtils = class {\r",
+					"    constructor() {}\r",
+					"\r",
+					"    getLocation() {\r",
+					"        return {\r",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}').slice(0,50),\r",
+					"            description: pm.variables.replaceIn('{{$randomLoremParagraphs}}').slice(0,2000),\r",
+					"            latitude: parseFloat(pm.variables.replaceIn('{{$randomLatitude}}')),\r",
+					"            longitude: parseFloat(pm.variables.replaceIn('{{$randomLongitude}}'))\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"    getUser() {\r",
+					"        return {\r",
+					"            name: pm.variables.replaceIn('{{$randomFullName}}'),\r",
+					"            email: pm.variables.replaceIn('{{$randomEmail}}')\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"    getCategory() {\r",
+					"        return {\r",
+					"            name: pm.variables.replaceIn('{{$randomWord}}') + Math.floor(Math.random() * 10000 * Math.random()).toString()\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"    getEvent(categoryId) {\r",
+					"        return {\r",
+					"            annotation: pm.variables.replaceIn('{{$randomLoremParagraph}}'),\r",
+					"            category: categoryId,\r",
+					"            description: pm.variables.replaceIn('{{$randomLoremParagraphs}}'),\r",
+					"            eventDate: this.getFutureDateTime(),\r",
+					"            location: {\r",
+					"                lat: parseFloat(pm.variables.replaceIn('{{$randomLatitude}}')),\r",
+					"                lon: parseFloat(pm.variables.replaceIn('{{$randomLongitude}}')),\r",
+					"            },\r",
+					"            paid: pm.variables.replaceIn('{{$randomBoolean}}'),\r",
+					"            participantLimit: pm.variables.replaceIn('{{$randomInt}}'),\r",
+					"            requestModeration: pm.variables.replaceIn('{{$randomBoolean}}'),\r",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}'),\r",
+					"        }\r",
+					"    }\r",
+					"\r",
+					"    getCompilation(...eventIds) {\r",
+					"        return {\r",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}').slice(0, 50),\r",
+					"            pinned: pm.variables.replaceIn('{{$randomBoolean}}'),\r",
+					"            events: eventIds\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"\r",
+					"    getFutureDateTime(hourShift = 5, minuteShift=0, yearShift=0) {\r",
+					"        let moment = require('moment');\r",
+					"\r",
+					"        let m = moment();\r",
+					"        m.add(hourShift, 'hour');\r",
+					"        m.add(minuteShift, 'minute');\r",
+					"        m.add(yearShift, 'year');\r",
+					"\r",
+					"        return m.format('YYYY-MM-DD HH:mm:ss');\r",
+					"    }\r",
+					"\r",
+					"    getWord(length = 1) {\r",
+					"        let result = '';\r",
+					"        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';\r",
+					"        const charactersLength = characters.length;\r",
+					"        let counter = 0;\r",
+					"        while (counter < length) {\r",
+					"            result += characters.charAt(Math.floor(Math.random() * charactersLength));\r",
+					"            counter += 1;\r",
+					"        }\r",
+					"        return result;\r",
+					"    }\r",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "request_body",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "response",
+			"value": ""
+		},
+		{
+			"key": "locId",
+			"value": ""
+		},
+		{
+			"key": "location1",
+			"value": ""
+		},
+		{
+			"key": "location2",
+			"value": ""
+		},
+		{
+			"key": "location3",
+			"value": ""
+		},
+		{
+			"key": "event1",
+			"value": ""
+		},
+		{
+			"key": "event2",
+			"value": ""
+		},
+		{
+			"key": "event3",
+			"value": ""
+		}
+	]
+}
