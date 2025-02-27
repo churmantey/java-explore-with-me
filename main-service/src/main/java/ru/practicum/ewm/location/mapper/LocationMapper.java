@@ -7,6 +7,7 @@ import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.dto.LocationDto;
 import ru.practicum.ewm.location.dto.NewLocationDto;
 import ru.practicum.ewm.location.dto.UpdateLocationDto;
+import ru.practicum.ewm.location.dto.UserLocationDto;
 
 import java.util.List;
 
@@ -17,6 +18,10 @@ public interface LocationMapper {
     LocationDto toLocationDto(Location location);
 
     List<LocationDto> toLocationDto(List<Location> location);
+
+    UserLocationDto toUserLocationDto(Location location);
+
+    List<UserLocationDto> toUserLocationDto(List<Location> location);
 
     Location toEntity(NewLocationDto newLocationDto);
 

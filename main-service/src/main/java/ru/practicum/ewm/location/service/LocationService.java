@@ -5,6 +5,7 @@ import ru.practicum.ewm.location.LocationState;
 import ru.practicum.ewm.location.dto.LocationDto;
 import ru.practicum.ewm.location.dto.NewLocationDto;
 import ru.practicum.ewm.location.dto.UpdateLocationDto;
+import ru.practicum.ewm.location.dto.UserLocationDto;
 
 import java.util.List;
 
@@ -15,9 +16,9 @@ public interface LocationService {
 
     List<LocationDto> getAdminLocationsByFilters(LocationState state, int from, int size);
 
-    List<LocationDto> getVisibleLocations();
+    List<UserLocationDto> getVisibleUserLocations(int from, int size);
 
-    LocationDto getVisibleLocationById(Long locId);
+    UserLocationDto getVisibleLocationById(Long locId);
 
     LocationDto getLocationById(Long locId);
 

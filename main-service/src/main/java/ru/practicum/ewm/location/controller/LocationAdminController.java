@@ -35,7 +35,8 @@ public class LocationAdminController {
     @PatchMapping("/{locId}")
     @ResponseStatus(HttpStatus.OK)
     public LocationDto updateLocation(@PathVariable("locId") Long locId,
-                                      @Valid @RequestBody UpdateLocationDto updateLocationDto, HttpServletRequest request) {
+                                      @Valid @RequestBody UpdateLocationDto updateLocationDto,
+                                      HttpServletRequest request) {
         log.info("PATCH location id={}, data={}", locId, updateLocationDto);
         statsLogger.logIPAndPath(request);
         return locationService.updateLocation(locId, updateLocationDto);

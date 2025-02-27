@@ -11,6 +11,7 @@ import ru.practicum.ewm.location.LocationState;
 import ru.practicum.ewm.location.dto.LocationDto;
 import ru.practicum.ewm.location.dto.NewLocationDto;
 import ru.practicum.ewm.location.dto.UpdateLocationDto;
+import ru.practicum.ewm.location.dto.UserLocationDto;
 import ru.practicum.ewm.location.mapper.LocationMapper;
 import ru.practicum.ewm.location.repository.LocationRepository;
 
@@ -60,13 +61,13 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public List<LocationDto> getVisibleLocations() {
-        return mapper.toLocationDto(locationRepository.findByStateOrderById(LocationState.VISIBLE));
+    public List<UserLocationDto> getVisibleUserLocations(int from, int size) {
+        return mapper.toUserLocationDto(locationRepository.findPortionByState(LocationState.VISIBLE, from, size));
     }
 
     @Override
-    public LocationDto getVisibleLocationById(Long locId) {
-        return mapper.toLocationDto(locationRepository.findByIdAndState(locId, LocationState.VISIBLE)
+    public UserLocationDto getVisibleLocationById(Long locId) {
+        return mapper.toUserLocationDto(locationRepository.findByIdAndState(locId, LocationState.VISIBLE)
                 .orElseThrow(() -> new NotFoundException("No location found, id=" + locId)));
     }
 

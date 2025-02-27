@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.dto.EventLocDto;
-import ru.practicum.ewm.location.dto.LocationDto;
+import ru.practicum.ewm.location.dto.UserLocationDto;
 import ru.practicum.ewm.location.service.LocationService;
 import ru.practicum.ewm.statslogger.StatsLogger;
 
@@ -23,20 +23,24 @@ public class LocationPublicController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<LocationDto> getLocations(HttpServletRequest request) {
+    public List<UserLocationDto> getLocations(@RequestParam(name = "from", defaultValue = "0") int from,
+                                              @RequestParam(name = "size", defaultValue = "10") int size,
+                                              HttpServletRequest request) {
         log.info("GET locations");
         statsLogger.logIPAndPath(request);
-        return locationService.getVisibleLocations();
+        return locationService.getVisibleUserLocations(from, size);
     }
 
     @GetMapping("/{locId}")
     @ResponseStatus(HttpStatus.OK)
-    public LocationDto getLocationById(@PathVariable Long locId, HttpServletRequest request) {
+    public UserLocationDto getLocationById(@PathVariable Long locId, HttpServletRequest request) {
         log.info("GET location by id={}", locId);
         statsLogger.logIPAndPath(request);
         return locationService.getVisibleLocationById(locId);
     }
 
+
+    // Получает опубликованные события в радиусе distance километров от позиции места
     @GetMapping("/{locId}/events")
     @ResponseStatus(HttpStatus.OK)
     public List<EventLocDto> getLocationEvents(@PathVariable Long locId,

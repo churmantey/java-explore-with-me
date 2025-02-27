@@ -122,7 +122,7 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
                 """;
 
         List<EventLocDto> ls = entityManager.createNativeQuery(queryText, EventLocDto.class)
-                .setParameter("state", EventStates.PUBLISHED)
+                .setParameter("state", EventStates.PUBLISHED.toString())
                 .setParameter("lat", latitude)
                 .setParameter("lon", longitude)
                 .setParameter("dist", distance)
@@ -131,5 +131,4 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
                 .getResultList();
         return ls;
     }
-
 }
