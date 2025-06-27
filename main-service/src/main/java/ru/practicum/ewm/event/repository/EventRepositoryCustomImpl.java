@@ -9,6 +9,7 @@ import jakarta.persistence.criteria.Root;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventSortTypes;
 import ru.practicum.ewm.event.EventStates;
+import ru.practicum.ewm.event.dto.EventLocDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -107,5 +108,27 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
                 .setFirstResult(from)
                 .setMaxResults(size)
                 .getResultList();
+    }
+
+    public List<EventLocDto> findEventsAroundLocation(Float latitude, Float longitude,
+                                                      Integer distance, int from, int size) {
+
+        String queryText = """
+                select e.id, e.title, e.annotation, distance(:lat, :lon, e.location_lat, e.location_lon) as distance
+                from events e
+                where e.state=:state and distance(:lat, :lon, e.location_lat, e.location_lon) <= :dist
+                order by distance(:lat, :lon, e.location_lat, e.location_lon) ASC
+                offset :from limit :size
+                """;
+
+        List<EventLocDto> ls = entityManager.createNativeQuery(queryText, EventLocDto.class)
+                .setParameter("state", EventStates.PUBLISHED.toString())
+                .setParameter("lat", latitude)
+                .setParameter("lon", longitude)
+                .setParameter("dist", distance)
+                .setParameter("from", from)
+                .setParameter("size", size)
+                .getResultList();
+        return ls;
     }
 }

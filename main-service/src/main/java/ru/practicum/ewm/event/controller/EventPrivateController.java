@@ -78,8 +78,8 @@ public class EventPrivateController {
     @ResponseStatus(HttpStatus.OK)
     public EventRequestStatusUpdateResponse updateRequestStates(@PathVariable("userId") Long userId,
                                                                 @PathVariable("eventId") Long eventId,
-                                                            @RequestBody EventRequestStatusUpdateRequest updateRequest,
-                                                            HttpServletRequest request) {
+                                                                @RequestBody EventRequestStatusUpdateRequest updateRequest,
+                                                                HttpServletRequest request) {
         log.info("PATCH requests states, userId={}, eventId={}, updateRequest={}", userId, eventId, updateRequest);
         statsLogger.logIPAndPath(request);
         return eventService.updateRequestStates(userId, eventId, updateRequest);

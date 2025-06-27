@@ -30,8 +30,9 @@ public class ParticipationRequestPrivateController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ParticipationRequestDto createRequest(@PathVariable("userId") Long userId, @RequestParam("eventId") Long eventId,
-                                          HttpServletRequest request) {
+    public ParticipationRequestDto createRequest(@PathVariable("userId") Long userId,
+                                                 @RequestParam("eventId") Long eventId,
+                                                 HttpServletRequest request) {
         log.info("POST new user requests , userId={}, eventId={}", userId, eventId);
         statsLogger.logIPAndPath(request);
         return requestService.createRequest(userId, eventId);
@@ -40,8 +41,8 @@ public class ParticipationRequestPrivateController {
     @PatchMapping("/{requestId}/cancel")
     @ResponseStatus(HttpStatus.OK)
     public ParticipationRequestDto cancelRequest(@PathVariable("userId") Long userId,
-                                          @PathVariable("requestId") Long requestId,
-                                          HttpServletRequest request) {
+                                                 @PathVariable("requestId") Long requestId,
+                                                 HttpServletRequest request) {
         log.info("PATCH cancel user requests , userId={}, requestId={}", userId, requestId);
         statsLogger.logIPAndPath(request);
         return requestService.cancelRequest(userId, requestId);

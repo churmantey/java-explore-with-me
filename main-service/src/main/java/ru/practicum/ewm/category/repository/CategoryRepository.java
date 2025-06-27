@@ -29,6 +29,4 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
         Optional<Category> optCategory = findById(categoryId);
         return optCategory.orElseThrow(() -> new NotFoundException("Category not found, id=" + categoryId));
     }
-
-
 }
